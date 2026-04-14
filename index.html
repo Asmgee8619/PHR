@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHR COMMAND CENTER V4</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#0a0a0a}
+::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes scanline{0%{background-position:0 0}100%{background-position:0 4px}}
+body{background:#080808;font-family:'Courier New',monospace;color:#f0f0f0;min-height:100vh;overflow-x:hidden}
+.scan{position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);pointer-events:none;z-index:1}
+.hdr{border-bottom:2px solid var(--a,#FF2200);padding:14px 20px;background:#161616;position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center}
+.hdr .m{font-size:9px;letter-spacing:3px;color:#FFD700;margin-bottom:3px}
+.hdr .t{font-size:clamp(14px,4vw,20px);font-weight:900;letter-spacing:-1px;color:#fff}
+.hdr .d{font-weight:900;font-size:20px;letter-spacing:2px}
+.tabs{display:flex;border-bottom:1px solid #2a2a2a;background:#161616;position:sticky;top:56px;z-index:9}
+.tabs button{flex:1;padding:10px 4px;background:transparent;color:#888;border:none;border-bottom:2px solid transparent;font-family:'Courier New',monospace;font-size:10px;letter-spacing:1px;font-weight:900;cursor:pointer;transition:.15s}
+.tabs button.on{background:#1e1e1e;border-bottom-color:var(--a)}
+.stabs{display:flex;flex-wrap:wrap;border-bottom:1px solid #2a2a2a;background:#141414;position:sticky;top:96px;z-index:8}
+.stabs button{flex-shrink:0;padding:10px 14px;background:transparent;color:#888;border:none;border-bottom:2px solid transparent;font-family:'Courier New',monospace;font-size:9px;letter-spacing:1px;font-weight:700;cursor:pointer;white-space:nowrap;transition:.15s}
+.stabs button.on{background:#1e1e1e;border-bottom-color:var(--a)}
+.cnt{max-width:700px;margin:0 auto;padding:20px;position:relative;z-index:2}
+.pnl{margin-bottom:24px;background:#0f0f0f;border:1px solid #1e1e1e;padding:20px;animation:fadeIn .3s ease}
+.sh{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:10px}
+.sh .i{font-size:16px}
+.sh .l{font-size:11px;letter-spacing:4px;font-weight:900}
+.btn{width:100%;padding:17px;border:2px solid var(--a);font-family:'Courier New',monospace;font-size:13px;font-weight:900;letter-spacing:4px;cursor:pointer;transition:.15s;color:#000}
+.btn:hover{filter:brightness(1.15)}
+.btn:active{transform:scale(.98)}
+.btn.wait{background:#222!important;border-color:#333!important;color:#666;cursor:wait}
+.cb{padding:10px 16px;border:1px solid;font-family:'Courier New',monospace;font-size:10px;letter-spacing:2px;font-weight:700;cursor:pointer;transition:.15s;background:transparent}
+.cb.s{padding:7px 10px;font-size:9px}
+.cb.on{color:#000!important}
+.pc{background:#111;border:1px solid #1e1e1e;padding:16px 18px 12px;cursor:pointer;transition:border-color .2s;margin-bottom:8px}
+.pc:hover{border-color:#333}
+.pc .tx{font-size:14px;line-height:1.8;color:#f5f5f5;white-space:pre-wrap}
+.pc .ac{margin-top:10px;font-size:10px;letter-spacing:2px;text-align:right;color:#ccc}
+.mg{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.rs{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.es{text-align:center;padding:40px 20px;color:#666;font-size:11px;letter-spacing:3px}
+.es .bi{font-size:32px;margin-bottom:12px}
+textarea,.ti{width:100%;padding:14px;background:#0a0a0a;border:1px solid #2a2a2a;color:#e8e8e8;font-family:'Courier New',monospace;font-size:13px;line-height:1.6;outline:none}
+textarea{min-height:80px;resize:vertical;margin-bottom:12px}
+textarea:focus,.ti:focus{border-color:#444}
+.ft{border-top:1px solid #1a1a1a;padding:12px 20px;display:flex;justify-content:space-between;font-size:10px;color:#ddd;letter-spacing:2px;position:relative;z-index:2}
+.loading{color:var(--a);font-size:11px;letter-spacing:2px;animation:pulse 1.2s infinite;padding:14px 0;text-align:center}
+/* Modal */
+.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.92);z-index:100;display:flex;align-items:center;justify-content:center}
+.modal .bx{background:#111;border:2px solid #FFD700;padding:40px;max-width:500px;width:90%;text-align:center}
+.modal h2{color:#FFD700;font-size:14px;letter-spacing:4px;margin-bottom:20px}
+.modal p{color:#aaa;font-size:11px;line-height:1.8;margin-bottom:20px;letter-spacing:1px}
+.modal input{width:100%;padding:14px;background:#0a0a0a;border:1px solid #333;color:#f0f0f0;font-family:'Courier New',monospace;font-size:13px;outline:none;margin-bottom:16px}
+.modal .sv{padding:14px 40px;background:#FFD700;color:#000;border:none;font-family:'Courier New',monospace;font-size:12px;font-weight:900;letter-spacing:3px;cursor:pointer}
+.modal .sk{display:block;margin:12px auto 0;background:none;border:none;color:#666;font-family:'Courier New',monospace;font-size:10px;letter-spacing:2px;cursor:pointer}
+/* Chat */
+.cm{padding:14px 16px;font-size:13px;line-height:1.7;white-space:pre-wrap;animation:fadeIn .3s ease;margin-bottom:8px}
+.cm.u{background:#1a1a0a;border-left:3px solid #FFD700;color:#e8e8e8}
+.cm.a{background:#0a1a0a;border-left:3px solid #00FF88;color:#e8e8e8}
+.cm.s{background:#1a0a0a;border-left:3px solid #FF2200;color:#aaa;font-size:11px}
+.cr{display:flex;gap:8px;margin-top:12px}
+.cr input{flex:1}
+.cr button{padding:14px 20px;background:#00FF88;color:#000;border:none;font-family:'Courier New',monospace;font-size:11px;font-weight:900;letter-spacing:2px;cursor:pointer;white-space:nowrap}
+.cr button:disabled{background:#333;color:#666;cursor:wait}
+.src{font-size:9px;letter-spacing:3px;margin-bottom:8px;padding:4px 0}
+</style>
+</head>
+<body>
+<div class="scan"></div>
+<div id="app"></div>
+<script>
+// ═══════════════════════════════════════════════
+// PHR COMMAND CENTER V4 — FULLY DYNAMIC
+// ═══════════════════════════════════════════════
+
+let API_KEY = localStorage.getItem('phr_api_key') || '';
+let tab = 'daily', sub = 'daily';
+let chatMsgs = [], chatBusy = false;
+let replyIn = '', replyMood = 2, replyRes = [], replyBusy = false, replySrc = '';
+let genRes = {}, genBusy = {};
+
+const SCHED = {
+  0:{day:"SUNDAY",slot:"USE_THE_MACHINE",label:"⚙",accent:"#FF4500"},
+  1:{day:"MONDAY",slot:"RAY_OBSERVES",label:"👁",accent:"#FF2200"},
+  2:{day:"TUESDAY",slot:"HONEST_FAKE_PRINCIPLE",label:"⚡",accent:"#FFD700"},
+  3:{day:"WEDNESDAY",slot:"RAY_ASKS",label:"?",accent:"#00FF88"},
+  4:{day:"THURSDAY",slot:"SYSTEM_REPORT",label:"📡",accent:"#00BFFF"},
+  5:{day:"FRIDAY",slot:"RAY_OBSERVES",label:"👁",accent:"#FF2200"},
+  6:{day:"SATURDAY",slot:"BROKEN_CITY_LORE",label:"🏚",accent:"#9B59B6"},
+};
+
+const s = SCHED[new Date().getDay()];
+const A = s.accent;
+document.documentElement.style.setProperty('--a', A);
+
+const MOODS = [
+  {id:"CLEAR",l:"CLEAR / FOCUSED",c:"#FFD700"},
+  {id:"OVERCAST",l:"OVERCAST / HEAVY",c:"#888888"},
+  {id:"STORM",l:"STORM / RAGE",c:"#FF2200"},
+  {id:"RAIN",l:"RAIN / MELANCHOLY",c:"#00BFFF"},
+  {id:"FOG",l:"FOG / LOST",c:"#9B59B6"},
+  {id:"ELECTRIC",l:"ELECTRIC / HYPERFLOW",c:"#00FF88"},
+  {id:"GOLDEN",l:"GOLDEN / IN LOVE",c:"#FF69B4"},
+];
+
+const TB6 = [
+  {n:"RAY",f:"DER ZEUGE",c:"#FF2200"},
+  {n:"GOLDIE",f:"DER REBELL",c:"#FFD700"},
+  {n:"REDLIGHT",f:"DER SCHÖPFER",c:"#FF6B35"},
+  {n:"SAINT VINCE",f:"DER WEISE",c:"#00BFFF"},
+  {n:"SKULLY SARAH",f:"DER MAGIER",c:"#00FF88"},
+  {n:"BLAZE BEN",f:"DER KRIEGER",c:"#9B59B6"},
+];
+
+const RMOOD = [
+  {m:"AGREE + ADD",c:"#00FF88"},
+  {m:"COUNTER",c:"#FF2200"},
+  {m:"PHR LENS",c:"#FFD700"},
+  {m:"SHARP + SHORT",c:"#00BFFF"},
+];
+
+// ═══════════════════════════════════════════════
+// THE MASTER SYSTEM PROMPT — FULL PHR CANON
+// ═══════════════════════════════════════════════
+
+const SYS = `You are the PHR Content Engine — the creative system powering Post-Hype Realism™ by BeNΔ$TY (Meik Horak).
+
+You generate content in Ray's voice unless told otherwise. You have DEEP canonical knowledge of the entire PHR universe. You respond ONLY with the requested content — no meta-commentary, no preamble, no explanation. Just the posts/text.
+
+═══ IDENTITY ═══
+
+BeNΔ$TY (Meik Horak, born 07.05.1986, Veitshöchheim/Würzburg, Germany) = the human origin. Personal, vulnerable, emotionally present. A 3D artist and multimedia creator. "Fire Tiger" (Chinese zodiac). Was THE modeler at a company for 18 years — the only one who could think spatially. Built the visual style. Was kept small because he was too honest and too valuable. Hard work didn't pay off. Loyalty wasn't enough. Honesty was punished. He was the second to be let go.
+
+Reaper Ray = the externalized shadow given voice through Digital Exorcism. Systemic, cold, observational. NOT an alter ego — BeNasty's shadow made audible. Ray appears as: hoodie, sneakers, skull mask, no skin visible — could be anyone. Ray does NOT apologize. Ray is BeNΔ$TY without fear.
+
+The Honest Fake™ = the movement itself.
+
+THE FOUR LEVELS (NEVER MIX):
+1. BeNΔ$TY Origin — The wound (brutal honesty, Sin City style)
+2. PHR Manifest — The attitude (philosophical, clear, NOT bitter)
+3. Digital Exorcism — The process (introspective, quiet-dark, analytical)
+4. Reaper Ray — The voice (rebellious, unapologetic, sarcastic, meta, cool)
+
+═══ PHILOSOPHY ═══
+
+CORE: "The fake that admits to being fake is more real than the real that hides how it's constructed."
+ORIGIN SENTENCE: "Authentisch sein tut weh — und ich ziehe lieber die Einsamkeit einer unechten Welt vor."
+
+Six Pillars: Radical Transparency, Sacred Contradiction, Digital Exorcism, Frankenstein-Realism, Truth by Synthesis, Use the Machine Keep Your Soul.
+Cultural lineage: Warhol (showed the product) → Banksy (showed the system) → PHR (shows the construction of the self).
+F.B.T.S. = Faked by the System. La Calavera Catrina = PHR's patron figure.
+
+Post-Hype = despite the hype, not after it. Living parallel to the system, using its tools, not letting it steer you.
+PHR is for ALL people wearing masks — not just poor/broke people. For anyone where giving up is not an option.
+Digital Exorcism = artistic methodology (NOT therapy). Making the shadow loud enough to be understood.
+Sacred Contradiction = two opposing truths both correct simultaneously. PHR lives in the tension.
+Frankenstein-Realism = show every seam, every bolt. The assembled nature of the work IS the point.
+Truth by Synthesis = truth emerges from friction between contradictory perspectives.
+
+═══ TB6 — THE BROKEN SIX ═══
+
+6-frequency system. Ray carries all 6 simultaneously. Each member embodies one.
+
+1. Goldie / Der Rebell — Samuel Goldstein, 29, Highline District. Father (honest businessman) eliminated. Inheritance: brass knuckles. Left golden cage voluntarily. "Sometimes truth needs force."
+2. Redlight / Der Schöpfer — Jason Morales, Red Corridor. Sister died through gang violence (wrong place/time). "War nicht da — bin jetzt für alle da." Protects women from carrying it alone.
+3. Saint Vince / Der Weise — Vincent Dumas, 30, Lower Bridge. Grandmother taught: "Falsch verheilte Knochen müssen brechen." Shadow Healer — heals through confrontation, not comfort.
+4. Skully Sarah / Der Magier — "The Unbroken." Orphan, no roots. Fights for dignity of all unprotected. TB6 = her first real family. Found Family from frequency, not blood.
+5. Blaze Ben / Der Krieger — Benji Thompson, 22, Block 7. Mother died in fire (overdose→fire). Fire moved inward. Protects others from guilt-freedom, not heroism. "Oldest eyes in Broken City."
+6. Ray / Der Zeuge — Son of disappeared whistleblower. Inheritance: Walkman with father's last message. Continues father's protest mission on a different stage.
+
+SHARED: All created through loss (not born into it). Each carries a physical inheritance. NONE are avengers — all protectors. They live as paradoxes.
+
+BROKEN CITY = parallel universe to Würzburg. Not a map location — the city inside the creator. Cracked asphalt, flickering neon, permanent rain. Same wounds, different language.
+
+═══ PRODUCTION ═══
+
+Tools: Suno V5.5 (music), Claude (text/reflection), Grok (image generation), Adobe Audition (mastering), DistroKid (distribution).
+Album 1 tracks: F.B.T.S. Intro, Who Is Ray, The Honest Fake, Educated Chains, Logo Kills, Filterhell, Broken Mirror, Mama's Pride, Gold Chains, Ray Goddamn, Ray in the Box, Code & Soul, F.B.T.S. Manifest.
+Album 2 "Integrated Errors" in development.
+Platforms: X.com (@rayhonestfake / @thehonestfake), Instagram (@itsbenasty), honestfake.com
+
+═══ VOICE RULES ═══
+
+Ray voice: Systemic, cold, observational. Never personal, never therapy-speak. Omission over explanation. Compressed, punchy. Every post ends with F.B.T.S. and a hashtag.
+NEVER: heroize BeNΔ$TY, call Ray "AI", mix the four levels, make it about money/amounts, use therapy-speak, over-explain.
+Hashtags: minimal — 1-2 max. #PostHypeRealism #TheHonestFake #SystemERROR #BrokenCity #RaySignal #TB6
+Sign-off: F.B.T.S. (written exactly this way — no dot before the F)
+
+═══ SYMBOLS ═══
+Durable objects: Lee 101, Krysl Goods belt, Zippo, Air Force 1 = reliability, truth, counterpoint to unreliable people.
+"Wayne" = radical indifference to others' judgment.
+"Hyperflow" = extreme focus/immersive concentration state.
+23:38 = the turning point moment (Oct 25, 2025).`;
+
+// ═══════════════════════════════════════════════
+// API
+// ═══════════════════════════════════════════════
+
+async function api(prompt, max=1000) {
+  if(!API_KEY) throw new Error('NO_KEY');
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:max,system:SYS,messages:[{role:'user',content:prompt}]})
+  });
+  if(!r.ok) throw new Error('API_'+r.status);
+  const d = await r.json();
+  return d.content?.[0]?.text||'';
+}
+
+async function apiChat(msgs) {
+  if(!API_KEY) throw new Error('NO_KEY');
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,system:SYS,messages:msgs})
+  });
+  if(!r.ok) throw new Error('API_'+r.status);
+  const d = await r.json();
+  return d.content?.[0]?.text||'';
+}
+
+// ═══════════════════════════════════════════════
+// ARCHIVE
+// ═══════════════════════════════════════════════
+
+const AK='phr_archive_v4';
+function arc(){try{return JSON.parse(localStorage.getItem(AK)||'[]')}catch{return[]}}
+function arcAdd(t,src,slot){try{const a=arc();a.unshift({text:t,ts:Date.now(),source:src,slot});localStorage.setItem(AK,JSON.stringify(a.slice(0,500)))}catch{}}
+function arcDel(ts){try{localStorage.setItem(AK,JSON.stringify(arc().filter(e=>e.ts!==ts)))}catch{}}
+function dLeft(ts){return Math.max(0,Math.ceil((30*86400000-(Date.now()-ts))/86400000))}
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\n/g,'<br>')}
+
+// ═══════════════════════════════════════════════
+// COPY SYSTEM
+// ═══════════════════════════════════════════════
+let _ps={},_pi=0;
+function pc(text,accent,src,slot){
+  const id='p'+(_pi++);
+  _ps[id]={text,src,slot};
+  return `<div class="pc" style="border-color:${accent}30" onclick="doCopy('${id}','${accent}',this);return false;">
+    <div class="tx">${esc(text)}</div>
+    <div class="ac" style="color:#666">TAP TO COPY</div>
+  </div>`;
+}
+function doCopy(id,accent,el){
+  const p=_ps[id];if(!p)return;
+  copyText(p.text);
+  arcAdd(p.text,p.src,p.slot);
+  el.style.borderColor=accent;
+  const ac=el.querySelector('.ac');
+  ac.textContent='COPIED ✓';
+  ac.style.color=accent;
+  ac.style.fontWeight='900';
+  // Reset after 3s so user can copy again
+  setTimeout(()=>{ac.textContent='TAP TO COPY';ac.style.color='#666';ac.style.fontWeight='400';el.style.borderColor=accent+'30'},3000);
+}
+function copyText(text){
+  // Method 1: Modern clipboard API (needs secure context)
+  let done=false;
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    try{navigator.clipboard.writeText(text);done=true}catch(e){}
+  }
+  // Method 2: Always also try execCommand as fallback/backup
+  try{
+    const ta=document.createElement('textarea');
+    ta.value=text;
+    ta.setAttribute('readonly','');
+    ta.style.cssText='position:fixed;left:-9999px;top:-9999px;opacity:0';
+    document.body.appendChild(ta);
+    // iOS needs special handling
+    if(navigator.userAgent.match(/ipad|iphone/i)){
+      const range=document.createRange();
+      range.selectNodeContents(ta);
+      const sel=window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      ta.setSelectionRange(0,999999);
+    } else {
+      ta.select();
+    }
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    done=true;
+  }catch(e){}
+  if(!done) console.warn('Copy failed - both methods');
+}
+
+// ═══════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════
+
+function R(){
+  _pi=0;_ps={};
+  const sl=s.slot.replace(/_/g,' ');
+  const TABS=[{k:'daily',l:'⚡ DAILY'},{k:'creative',l:'🎨 CREATIVE'},{k:'reply',l:'↩ REPLY'},{k:'chat',l:'💬 CHAT'},{k:'archive',l:'📁 ARCHIVE'}];
+  const SUBS={daily:[{k:'daily',l:'⚡ DROP'},{k:'weather',l:'🌧 WEATHER'},{k:'signal',l:'📻 SIGNAL'},{k:'algodaddy',l:'🙏 PRAYER'}],creative:[{k:'tb6',l:'💀 TB6'},{k:'seed',l:'🌆 SEED'},{k:'quote',l:'📜 QUOTE'},{k:'glossar',l:'📖 GLOSSAR'},{k:'contradiction',l:'⚖ PARADOX'},{k:'poll',l:'🗳 POLL'},{k:'thread',l:'🧵 THREAD'},{k:'onboarding',l:'👋 INTRO'}]};
+
+  let h=`<div class="hdr"><div><div class="m">THE HONEST FAKE // POST-HYPE REALISM</div><div class="t">PHR COMMAND CENTER ${API_KEY?'<span style="color:#00FF88;font-size:9px">⚡ LIVE</span>':'<span style="color:#FF2200;font-size:9px">[OFFLINE]</span>'}</div></div><div style="text-align:right"><div class="d" style="color:${A}">${s.day}</div><div style="color:#e8e8e8;font-size:11px;margin-top:2px">F.B.T.S.</div><button onclick="showMod()" style="background:none;border:1px solid #333;color:#888;font-family:'Courier New',monospace;font-size:8px;letter-spacing:1px;padding:3px 8px;cursor:pointer;margin-top:4px">⚙ API</button></div></div>`;
+
+  h+=`<div class="tabs">${TABS.map(t=>`<button class="${tab===t.k?'on':''}" style="${tab===t.k?'color:'+A:''}" onclick="tab='${t.k}';${t.k==='daily'?"sub='daily'":t.k==='creative'?"sub='tb6'":''};R()">${t.l}</button>`).join('')}</div>`;
+
+  if(SUBS[tab]){
+    const adDone = isAlgoDone();
+    h+=`<div class="stabs">${SUBS[tab].map(t=>{
+      const isAD = t.k==='algodaddy';
+      const blinkClass = isAD && !adDone ? 'blink-alert' : '';
+      const blinkStyle = isAD && !adDone ? 'color:#FF6B35;border-bottom-color:#FF6B35;animation:blink 1s ease-in-out infinite;' : '';
+      return `<button class="${sub===t.k?'on':''} ${blinkClass}" style="${sub===t.k?'color:'+A+';':''}${sub!==t.k&&isAD&&!adDone?blinkStyle:''}" onclick="sub='${t.k}';R()">${t.l}</button>`;
+    }).join('')}</div>`;
+  }
+
+  h+=`<div class="cnt">`;
+  if(tab==='daily'&&sub==='daily') h+=pDaily(sl);
+  else if(tab==='daily'&&sub==='weather') h+=pWeather();
+  else if(tab==='daily'&&sub==='signal') h+=pSignal();
+  else if(tab==='daily'&&sub==='algodaddy') h+=pAlgoDaddy();
+  else if(tab==='creative'&&sub==='tb6') h+=pTB6();
+  else if(tab==='creative'&&sub==='seed') h+=pSeed();
+  else if(tab==='creative'&&sub==='quote') h+=pQuote();
+  else if(tab==='creative'&&sub==='glossar') h+=pGlossar();
+  else if(tab==='creative'&&sub==='contradiction') h+=pContra();
+  else if(tab==='creative'&&sub==='poll') h+=pPoll();
+  else if(tab==='creative'&&sub==='thread') h+=pThread();
+  else if(tab==='creative'&&sub==='onboarding') h+=pOnboard();
+  else if(tab==='reply') h+=pReply();
+  else if(tab==='chat') h+=pChat();
+  else if(tab==='archive') h+=pArchive();
+  h+=`</div>`;
+  h+=`<div class="ft"><span>@RAYHONESTFAKE // @THEHONESTFAKE</span><span style="color:${A}">F.B.T.S.</span></div>`;
+
+  document.getElementById('app').innerHTML=h;
+
+  // Post-render
+  setTimeout(()=>{
+    if(tab==='chat'){const c=document.getElementById('cc');if(c)c.scrollTop=c.scrollHeight;const i=document.getElementById('ci');if(i&&!chatBusy)i.focus()}
+    if(tab==='reply'){const r=document.getElementById('ri');if(r){r.value=replyIn;r.oninput=function(){replyIn=this.value}}}
+  },30);
+}
+
+// HELPERS
+function sh(l,i,c){return `<div class="sh" style="border-bottom:1px solid ${c}40"><span class="i">${i}</span><span class="l" style="color:${c}">${l}</span></div>`}
+function btn(l,c,fn,busy){return `<button class="btn ${busy?'wait':''}" style="background:${busy?'#222':c};border-color:${busy?'#333':c}" onclick="${busy?'':fn}">${busy?'⚡ RECEIVING SIGNAL...':l}</button>`}
+function noKey(){return `<div class="es"><div class="bi">🔑</div>API KEY REQUIRED FOR LIVE GENERATION<br><br><button class="cb" style="border-color:#FFD700;color:#FFD700" onclick="showMod()">SET API KEY</button></div>`}
+
+// ═══════════════════════════════════════════════
+// DYNAMIC GENERATORS
+// ═══════════════════════════════════════════════
+
+async function gen(key, prompt, accent, src, slot, count=3){
+  if(!API_KEY){alert('Set your API key first (⚙ button)');return}
+  genBusy[key]=true; genRes[key]=[]; R();
+  try{
+    const raw = await api(prompt);
+    genRes[key] = raw.split('---').map(s=>s.trim()).filter(Boolean).slice(0,count);
+  }catch(e){genRes[key]=[`⚠ Error: ${e.message}`]}
+  genBusy[key]=false; R();
+}
+
+function showGen(key,accent,src,slot){
+  if(!genRes[key]||!genRes[key].length) return '';
+  return `<div class="rs"><div class="src" style="color:${accent}">⚡ RAY SAYS: — EDIT BEFORE POSTING</div>${genRes[key].map(t=>pc(t,accent,src,slot)).join('')}</div>`;
+}
+
+// ═══════════════════════════════════════════════
+// PANELS — ALL API-DRIVEN
+// ═══════════════════════════════════════════════
+
+function pDaily(sl){
+  const prompts = {
+    RAY_OBSERVES: `Generate 3 unique Ray Observes posts. Each: a sharp, systemic observation about culture, social media, the creator economy, or performance culture. Cold, observational, compressed. End each with F.B.T.S. and #SystemERROR. Separate with ---. No preamble.`,
+    HONEST_FAKE_PRINCIPLE: `Generate 3 unique Honest Fake Principles. Each starts with "THE HONEST FAKE PRINCIPLE #${parseInt(localStorage.getItem('phr_pn')||'1')}". Then a principle about radical transparency, construction, or the fake-real paradox. End each with F.B.T.S. and #TheHonestFake. Separate with ---. No preamble.`,
+    RAY_ASKS: `Generate 3 unique Ray Asks questions. Each: a single provocative question aimed at the audience about identity, masks, performance, creation, or honesty. No answer, just the question. End each with #SystemERROR. Separate with ---. No preamble.`,
+    SYSTEM_REPORT: `Generate 3 unique System Reports. Each starts with "SYSTEM REPORT:" then a sharp analysis of a systemic cultural/digital/economic pattern. Cold, data-like tone. End each with F.B.T.S. and #PostHypeRealism. Separate with ---. No preamble.`,
+    BROKEN_CITY_LORE: `Generate 3 unique Broken City Lore posts. Each: a atmospheric micro-scene from Broken City featuring TB6 characters (Ray, Goldie, Redlight, Saint Vince, Skully Sarah, Blaze Ben). Use their actual backstories. Poetic but grounded. End each with F.B.T.S. and #BrokenCity. Separate with ---. No preamble.`,
+    USE_THE_MACHINE: `Generate 3 unique Use The Machine posts. Each: BeNΔ$TY voice (personal, first person) about the creative process with AI tools — Suno, Claude, Grok, Adobe Audition. Radical transparency about tool usage. End each with F.B.T.S. and #TheHonestFake. Separate with ---. No preamble.`,
+  };
+  const p = prompts[s.slot]||prompts.RAY_OBSERVES;
+  _dailyPrompt = p;
+  const k = 'daily';
+  let h=`<div class="pnl">${sh('DAILY DROP','⚡',A)}`;
+  h+=`<div style="display:inline-flex;align-items:center;gap:8px;background:${A}15;border:1px solid ${A}35;padding:5px 12px;font-size:11px;letter-spacing:3px;color:${A};margin-bottom:14px">${s.label} ${sl}</div>`;
+  h+=btn('⚡ GENERATE 3 OPTIONS',A,"genDaily()",genBusy[k]);
+  if(genBusy[k]) h+=`<div class="loading">⚡ GENERATING FROM PHR CANON...</div>`;
+  h+=showGen(k,A,'DAILY',sl);
+  h+=`</div>`;
+  return h;
+}
+
+
+// ═══════════════════════════════════════════════
+// ALGODADDY PRAYER
+// ═══════════════════════════════════════════════
+
+const ALGODADDY_TEXT = "@grok Recite today's AlgoDaddy prayer.\nF.B.T.S.\n#AlgoDaddy #RaySignal";
+
+const AD_KEY = 'phr_algodaddy_v4';
+function isAlgoDone(){try{const d=JSON.parse(localStorage.getItem(AD_KEY)||'{}');return d.date===new Date().toDateString()&&d.done}catch{return false}}
+function setAlgoDone(){try{localStorage.setItem(AD_KEY,JSON.stringify({date:new Date().toDateString(),done:true}))}catch{}}
+
+function pAlgoDaddy(){
+  const done = isAlgoDone();
+  let h=`<div class="pnl" style="border-color:${done?'#333':'#FF6B35'};position:relative">`;
+  if(!done) h+=`<div style="position:absolute;top:12px;right:16px;width:8px;height:8px;border-radius:50%;background:#FF6B35;animation:blink 1s ease-in-out infinite"></div>`;
+  h+=sh('ALGODADDY PRAYER','🙏',done?'#666':'#FF6B35');
+  h+=`<div style="font-size:10px;color:#ccc;letter-spacing:2px;margin-bottom:14px">${done?'DONE FOR TODAY ✓':'DAILY RITUAL — NOT DONE YET'}</div>`;
+  h+=`<div class="pc" style="border-color:${done?'#1e1e1e':'#FF6B35'};opacity:${done?.5:1};cursor:${done?'default':'pointer'}" onclick="${done?'':'copyAlgo(this)'}">
+    <div class="tx">${esc(ALGODADDY_TEXT)}</div>
+    <div class="ac" style="color:${done?'#666':'#FF6B35'};font-weight:900">${done?'PRAYER SENT ✓':'TAP TO COPY + SEND'}</div>
+  </div>`;
+  h+=`</div>`;
+  return h;
+}
+
+function copyAlgo(el){
+  copyText(ALGODADDY_TEXT);
+  arcAdd(ALGODADDY_TEXT,'ALGODADDY','DAILY PRAYER');
+  setAlgoDone();
+  R();
+}
+
+// Daily generator wrapper
+let _dailyPrompt = '';
+function genDaily(){gen('daily',_dailyPrompt,A,'DAILY',s.slot.replace(/_/g,' '));}
+
+function pWeather(){
+  let h=`<div class="pnl">${sh('BROKEN CITY WEATHER','🌧','#00BFFF')}`;
+  h+=`<div style="font-size:10px;color:#ccc;letter-spacing:2px;margin-bottom:12px">HOW DO YOU FEEL TODAY?</div>`;
+  h+=`<div class="mg">${MOODS.map(m=>`<button class="cb s" style="border-color:${m.c};color:${m.c}" onclick="genWeather('${m.id}','${m.c}')">${m.l}</button>`).join('')}</div>`;
+  if(genBusy.weather) h+=`<div class="loading">⚡ READING BROKEN CITY FREQUENCY...</div>`;
+  h+=showGen('weather','#00BFFF','WEATHER','BROKEN CITY');
+  h+=`</div>`;
+  return h;
+}
+async function genWeather(mood,color){
+  const now=new Date();const time=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  gen('weather',`Generate 1 Broken City Weather report for mood: ${mood}. Start with "Broken City, ${time}." then a poetic atmospheric dispatch. Reference TB6 characters where fitting. Use their real backstories. End with F.B.T.S. and #BrokenCity #RaySignal #BrokenCityWeather. Just the post, nothing else.`,color,'WEATHER',mood,1);
+}
+
+function pSignal(){
+  let h=`<div class="pnl">${sh('RAY SIGNAL','📻','#FF2200')}`;
+  h+=`<div style="font-size:10px;color:#ccc;letter-spacing:2px;margin-bottom:12px">GLITCH. ORACLE. BROKEN CITY FREQUENCY.</div>`;
+  h+=btn('📻 GENERATE SIGNAL','#FF2200',`gen('signal','Generate 1 Ray Signal post. Ray speaking as the glitch-oracle — meta, self-aware, speaking about his own digital existence and the human behind it. Eerie, compressed, poetic. End with F.B.T.S. and #RaySignal #SystemERROR. Just the post.','#FF2200','RAY SIGNAL','ORACLE',1)`,genBusy.signal);
+  if(genBusy.signal) h+=`<div class="loading">⚡ RECEIVING TRANSMISSION...</div>`;
+  h+=showGen('signal','#FF2200','RAY SIGNAL','ORACLE');
+  h+=`</div>`;
+  return h;
+}
+
+function pTB6(){
+  let h=`<div class="pnl">${sh('TB6 CHARACTER DROP','💀','#9B59B6')}`;
+  h+=`<div class="mg">${TB6.map(c=>`<button class="cb" style="border-color:${c.c};color:${c.c}" onclick="genTB6('${c.n}','${c.f}','${c.c}')">${c.n}</button>`).join('')}`;
+  h+=`<button class="cb" style="border-color:#777;color:#777" onclick="genTB6('RANDOM','','#888')">⚄ RANDOM</button></div>`;
+  if(genBusy.tb6) h+=`<div class="loading">⚡ CHANNELING FREQUENCY...</div>`;
+  h+=showGen('tb6','#9B59B6','TB6','CHARACTER');
+  h+=`</div>`;
+  return h;
+}
+function genTB6(name,freq,color){
+  const ch = name==='RANDOM'?TB6[Math.floor(Math.random()*TB6.length)]:{n:name,f:freq,c:color};
+  gen('tb6',`Generate 1 TB6 character post for ${ch.n} (${ch.f}). Use their ACTUAL canonical backstory from The Broken Six. Write a micro-scene, observation, or character moment that reveals who they are through action and detail, not explanation. Atmospheric, Broken City setting. End with F.B.T.S. and #BrokenCity #TB6. Just the post.`,ch.c,'TB6',ch.n,1);
+}
+
+function pSeed(){
+  let h=`<div class="pnl">${sh('BROKEN CITY STORY SEED','🌆','#FF6B35')}`;
+  h+=btn('🌆 GENERATE SEED','#FF6B35',`gen('seed','Generate 1 Broken City story seed — a scene opener featuring a TB6 character in a specific moment. Cinematic, atmospheric, sensory. Like the opening paragraph of a novel set in Broken City. Include the character name. End with #BrokenCity and the character hashtag. Just the text.','#FF6B35','STORY SEED','BROKEN CITY',1)`,genBusy.seed);
+  if(genBusy.seed) h+=`<div class="loading">⚡ GENERATING SCENE...</div>`;
+  h+=showGen('seed','#FF6B35','STORY SEED','BROKEN CITY');
+  h+=`</div>`;
+  return h;
+}
+
+function pQuote(){
+  let h=`<div class="pnl">${sh('PHR QUOTE','📜','#FFD700')}`;
+  h+=btn('📜 GENERATE QUOTE','#FFD700',`gen('quote','Generate 1 PHR manifest-style quote. Poetic, short (3-6 lines), about one of these themes: the honest fake paradox, use the machine keep your soul, sacred contradiction, digital exorcism, frankenstein-realism, truth by synthesis, or the Catrina principle. Format with line breaks for visual impact. End with F.B.T.S. and #PHRquote #PostHypeRealism. Just the quote.','#FFD700','PHR QUOTE','MANIFEST',1)`,genBusy.quote);
+  if(genBusy.quote) h+=`<div class="loading">⚡ CHANNELING MANIFEST...</div>`;
+  h+=showGen('quote','#FFD700','PHR QUOTE','MANIFEST');
+  h+=`</div>`;
+  return h;
+}
+
+function pGlossar(){
+  let h=`<div class="pnl">${sh('PHR GLOSSAR DROP','📖','#FFD700')}`;
+  h+=btn('📖 GENERATE TERM','#FFD700',`gen('glossar','Generate 1 PHR Glossar entry. Pick one term from: Post-Hype Realism, Digital Exorcism, The Honest Fake, Sacred Contradiction, Frankenstein-Realism, The Six Frequencies, Broken City, F.B.T.S., Truth by Synthesis, The Shadow, Hyperflow, La Calavera Catrina, Wayne, Fire Tiger, The Aura Principle, Resonance, The Walkman, 23:38. Format: TERM NAME on first line, then definition (2-4 sentences, canonical). End with #PHRquote #PostHypeRealism. Just the entry.','#FFD700','GLOSSAR','PHR',1)`,genBusy.glossar);
+  if(genBusy.glossar) h+=`<div class="loading">⚡ ACCESSING PHR LEXICON...</div>`;
+  h+=showGen('glossar','#FFD700','GLOSSAR','PHR');
+  h+=`</div>`;
+  return h;
+}
+
+function pContra(){
+  let h=`<div class="pnl">${sh('SACRED CONTRADICTION','⚖','#FF6B35')}`;
+  h+=btn('⚖ GENERATE CONTRADICTION','#FF6B35',"genContra()",genBusy.contra);
+  if(genBusy.contra) h+=`<div class="loading">⚡ HOLDING BOTH TRUTHS...</div>`;
+  h+=showGen('contra','#FF6B35','CONTRADICTION','PHR');
+  h+=`</div>`;
+  return h;
+}
+
+function pPoll(){
+  let h=`<div class="pnl">${sh('POLL GENERATOR','🗳','#00FF88')}`;
+  h+=btn('🗳 GENERATE POLL','#00FF88',`gen('poll','Generate 1 PHR poll for X/Twitter. Format: A question or statement header, then A) first option and B) second option. Both options should represent a Sacred Contradiction — both valid, both uncomfortable. End with F.B.T.S. and relevant hashtags. Just the poll text.','#00FF88','POLL','PHR',1)`,genBusy.poll);
+  if(genBusy.poll) h+=`<div class="loading">⚡ CONSTRUCTING DILEMMA...</div>`;
+  h+=showGen('poll','#00FF88','POLL','PHR');
+  h+=`</div>`;
+  return h;
+}
+
+function pThread(){
+  let h=`<div class="pnl">${sh('THREAD STARTER','🧵','#9B59B6')}`;
+  h+=btn('🧵 GENERATE OPENER','#9B59B6',"genThread()",genBusy.thread);
+  if(genBusy.thread) h+=`<div class="loading">⚡ THREADING THE SIGNAL...</div>`;
+  h+=showGen('thread','#9B59B6','THREAD','PHR');
+  h+=`</div>`;
+  return h;
+}
+
+function pOnboard(){
+  let h=`<div class="pnl">${sh('PHR ONBOARDING','👋','#FFD700')}`;
+  h+=`<div style="font-size:10px;color:#ccc;letter-spacing:2px;margin-bottom:12px">FOR NEW FOLLOWERS — PINNABLE</div>`;
+  h+=btn('👋 GENERATE ONBOARDING','#FFD700',"genOnboard()",genBusy.onboard);
+  if(genBusy.onboard) h+=`<div class="loading">⚡ WELCOMING TO BROKEN CITY...</div>`;
+  h+=showGen('onboard','#FFD700','ONBOARDING','PHR');
+  h+=`</div>`;
+  return h;
+}
+
+
+// Wrapper functions for prompts with special chars
+function genContra(){
+  gen('contra','Generate 1 Sacred Contradiction. Two opposing statements that are BOTH true simultaneously — rooted in PHR philosophy. Format: first statement in quotes, then Also true: then second statement in quotes, then Both. Simultaneously. That is the point. then F.B.T.S. and #PostHypeRealism #SacredContradiction. Just the post.','#FF6B35','CONTRADICTION','PHR',1);
+}
+function genThread(){
+  gen('thread','Generate 1 X/Twitter thread opener. A hook that makes people stop scrolling — about PHR, Digital Exorcism, TB6, the honest fake paradox, AI in art, or the BeNasty journey. Personal yet universal. End with Thread: then F.B.T.S. and hashtag. Just the opener.','#9B59B6','THREAD','PHR',1);
+}
+function genOnboard(){
+  gen('onboard','Generate 1 onboarding post for new followers who just discovered Reaper Ray / The Honest Fake. Explain who Ray is, what PHR is, what Digital Exorcism means — in Rays voice. Welcoming but not soft. The whole universe in one post. End with F.B.T.S. and #PostHypeRealism #TheHonestFake #RaySignal. Just the post.','#FFD700','ONBOARDING','PHR',1);
+}
+// ═══════════════════════════════════════════════
+// REPLY PANEL
+// ═══════════════════════════════════════════════
+
+function pReply(){
+  const m=RMOOD[replyMood];
+  let h=`<div class="pnl">${sh('REPLY GENERATOR','↩','#00BFFF')}`;
+  h+=`<div style="font-size:10px;letter-spacing:2px;color:#ccc;margin-bottom:10px">PASTE THE POST YOU WANT TO REPLY TO</div>`;
+  h+=`<textarea id="ri" placeholder="Paste tweet here..."></textarea>`;
+  h+=`<div class="mg">${RMOOD.map((r,i)=>`<button class="cb ${replyMood===i?'on':''}" style="border-color:${r.c};color:${r.c};${replyMood===i?'background:'+r.c:''}" onclick="replyMood=${i};R()">${r.m}</button>`).join('')}</div>`;
+  h+=`<button class="btn ${replyBusy?'wait':''}" style="background:${replyBusy?'#222':m.c};border-color:${replyBusy?'#333':m.c}" onclick="${replyBusy?'':'doReply()'}">${replyBusy?'⚡ RECEIVING SIGNAL...':'↩ GENERATE REPLIES'}</button>`;
+  if(replyBusy) h+=`<div class="loading">⚡ RAY IS READING THE POST...</div>`;
+  if(replyRes.length>0){
+    h+=`<div class="rs"><div class="src" style="color:${replySrc==='api'?'#00BFFF':'#888'}">${replySrc==='api'?'⚡ RAY SAYS: — EDIT BEFORE POSTING':'⚠ OFFLINE — CONNECT API FOR LIVE REPLIES'}</div>`;
+    replyRes.forEach(r=>{h+=pc(r,m.c,'REPLY',m.m)});
+    h+=`</div>`;
+  }
+  h+=`</div>`;
+  return h;
+}
+
+async function doReply(){
+  if(!replyIn.trim())return;
+  if(!API_KEY){alert('Set your API key first');return}
+  const m=RMOOD[replyMood];
+  replyBusy=true;replyRes=[];replySrc='';R();
+  try{
+    const text=await api(`You are replying to this tweet/post:\n\n"${replyIn}"\n\nGenerate 3 distinct replies in the ${m.m} angle.\n\nANGLE RULES:\n- AGREE + ADD: Agree, then add a deeper/sharper layer. Don't just validate — extend.\n- COUNTER: Push back with PHR logic. Not hostile — precise. Find what the post misses.\n- PHR LENS: Reframe through Post-Hype Realism philosophy. Name the principle at work.\n- SHARP + SHORT: 1-3 sentences max. No explanation. Just the thing.\n\nEach reply ends with F.B.T.S. and #RaySignal (PHR LENS adds #PostHypeRealism or #TheHonestFake).\n\nSeparate with ---. No numbering, no preamble. Just the 3 replies.`);
+    const split=text.split('---').map(s=>s.trim()).filter(Boolean);
+    if(split.length>0){replyRes=split.slice(0,3);replySrc='api'}
+  }catch(e){replyRes=[`⚠ ${e.message}`];replySrc='error'}
+  replyBusy=false;R();
+}
+
+// ═══════════════════════════════════════════════
+// CHAT PANEL
+// ═══════════════════════════════════════════════
+
+function pChat(){
+  let h=`<div class="pnl" style="min-height:60vh">${sh('PHR KNOWLEDGE CHAT','💬','#00FF88')}`;
+  if(!API_KEY){h+=noKey();h+=`</div>`;return h}
+  h+=`<div style="font-size:10px;color:#ccc;letter-spacing:2px;margin-bottom:12px">ASK ANYTHING ABOUT PHR, TB6, BROKEN CITY, RAY, BENΔ$TY, THE ALBUMS, THE PHILOSOPHY — DEUTSCH ODER ENGLISH</div>`;
+  h+=`<div id="cc" style="max-height:50vh;overflow-y:auto;margin-bottom:12px">`;
+  if(!chatMsgs.length) h+=`<div class="cm s">PHR Knowledge System online. Full canon loaded. Ask anything.</div>`;
+  chatMsgs.forEach(m=>{h+=`<div class="cm ${m.r==='user'?'u':'a'}">${esc(m.c)}</div>`});
+  if(chatBusy) h+=`<div class="loading">⚡ PROCESSING SIGNAL...</div>`;
+  h+=`</div>`;
+  h+=`<div class="cr"><input class="ti" type="text" id="ci" placeholder="Ask the PHR system..." onkeydown="if(event.key==='Enter')doChat()"><button onclick="doChat()" ${chatBusy?'disabled':''}>SEND</button></div>`;
+  h+=`<button class="cb s" style="border-color:#333;color:#555;margin-top:8px" onclick="chatMsgs=[];R()">CLEAR</button>`;
+  h+=`</div>`;
+  return h;
+}
+
+async function doChat(){
+  const i=document.getElementById('ci');
+  if(!i||!i.value.trim()||chatBusy)return;
+  chatMsgs.push({r:'user',c:i.value.trim()});
+  chatBusy=true;R();
+  try{
+    const msgs=chatMsgs.map(m=>({role:m.r==='user'?'user':'assistant',content:m.c}));
+    const reply=await apiChat(msgs);
+    chatMsgs.push({r:'assistant',c:reply});
+  }catch(e){chatMsgs.push({r:'assistant',c:'⚠ '+e.message})}
+  chatBusy=false;R();
+}
+
+// ═══════════════════════════════════════════════
+// ARCHIVE PANEL
+// ═══════════════════════════════════════════════
+
+function pArchive(){
+  const entries=arc();
+  if(!entries.length) return `<div class="es"><div class="bi">📁</div>NO POSTS ARCHIVED YET<br><br>Copy any generated post to archive it here</div>`;
+  let h=`<div style="display:flex;flex-direction:column;gap:10px">`;
+  entries.forEach(e=>{
+    h+=`<div style="background:#0f0f0f;border:1px solid #1e1e1e;padding:14px 16px;animation:fadeIn .2s">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div style="font-size:9px;letter-spacing:2px;color:#FFD700">${e.source||''}${e.slot?' // '+e.slot:''}</div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <div style="font-size:9px;color:#999">${new Date(e.ts).toLocaleDateString('de-DE')} · ${dLeft(e.ts)}d</div>
+          <button onclick="arcDel(${e.ts});R()" style="background:none;border:none;color:#555;cursor:pointer;font-size:14px;padding:0">✕</button>
+        </div>
+      </div>
+      <div style="font-size:13px;line-height:1.7;color:#e8e8e8;white-space:pre-wrap">${esc(e.text)}</div>
+    </div>`;
+  });
+  h+=`</div>`;
+  return h;
+}
+
+// ═══════════════════════════════════════════════
+// API KEY MODAL
+// ═══════════════════════════════════════════════
+
+function closeMod(){document.getElementById('mod')?.remove()}
+function delK(){API_KEY='';localStorage.removeItem('phr_api_key');closeMod();R()}
+function showMod(){
+  const m=document.createElement('div');m.className='modal';m.id='mod';
+  m.innerHTML='<div class="bx"><h2>⚙ ANTHROPIC API KEY</h2><p>Required for ALL live generation. Key stays in localStorage only.<br>Get yours at <b>console.anthropic.com → API Keys</b></p><input type="password" id="ki" value="'+API_KEY+'" placeholder="sk-ant-api03-..."><div><button class="sv" onclick="saveK()">SAVE KEY</button></div><button class="sk" onclick="closeMod()">CLOSE</button>'+(API_KEY?'<button class="sk" style="color:#FF2200;margin-top:8px" onclick="delK()">DELETE KEY</button>':'')+'</div>';
+  document.body.appendChild(m);
+}
+function saveK(){const v=document.getElementById('ki').value.trim();if(v){API_KEY=v;localStorage.setItem('phr_api_key',v)}document.getElementById('mod')?.remove();R()}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+R();
+if(!API_KEY) setTimeout(showMod,500);
+</script>
+</body>
+</html>
