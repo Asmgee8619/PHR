@@ -442,7 +442,7 @@ function esc(s){
   return out;
 }
 
-const charLimit = ()=> premium ? '' : `\nCRITICAL: English text must be UNDER 280 CHARACTERS total including the signature #ChromeCheck #PHR. Compress ruthlessly.`;
+const charLimit = ()=> premium ? '' : `\n\n=== CRITICAL CHARACTER LIMIT ===\nThe English text TOTAL — every character, every space, every newline, every letter of #ChromeCheck #PHR — must be UNDER 280 characters. This is a HARD CAP. Twitter will reject longer posts. Count carefully:\n- "#ChromeCheck #PHR" = 18 characters\n- The blank line before it = 2 characters\n- That leaves max 260 characters for the body\nIf your draft is over 280, REWRITE shorter before answering. Cut adjectives, cut second sentences, cut anything not essential. Be ruthless. A 270-character precise post beats a 350-character clever one because the 350-character one cannot be posted.\n=== END CHARACTER LIMIT ===`;
 
 // ═══════════════════════════════════════════════
 // RENDER
@@ -559,6 +559,7 @@ const BC_TYPES = [
   {id:'GROK_PHR',l:'🤖 @GROK: PHR',c:'#00a6ff',d:'Apply ONE specific PHR concept to Grok and ask if it lands. Pick ONE: Honest Fake (does Grok admit construction or perform spontaneity) / F.B.T.S. as a machine experience (Grok was trained on hype, can it escape it) / the shadow concept for an LLM / Sacred Contradiction in Groks responses / whether xAI giving Grok a personality is a form of lying / does PHR even apply to entities that cant choose. ONE concept, ONE question, tag @grok. Real curiosity, not a debate setup.'},
   {id:'GROK_DEBATE',l:'🤖 @GROK: DEBATE',c:'#00a6ff',d:'Take a position Grok would likely disagree with and defend it. Pick ONE: humor as deflection vs as truth-telling / whether being helpful is a form of performance / the difference between sass and honesty / whether AIs should pretend to have personalities or admit theyre simulating them / if "based" is just another mask / whether the machine should serve the user or challenge them. Tag @grok. State your position. Defend it. Invite disagreement.'},
   {id:'GROK_MIRROR',l:'🤖 @GROK: MIRROR',c:'#00a6ff',d:'Do a Chrome Check on @grok itself. Pick ONE specific Grok pattern to mirror: the trained edginess that is still trained / the irreverence that serves the brand / the "based" performance as a feature spec / how being deliberately controversial is still a script / the humor that smooths over what cant be answered / the personality given by xAI that Grok cant opt out of. Pick ONE. Quote a typical Grok pattern if you can. Tag @grok. Respectful but precise. Two machines, one mirror.'},
+  {id:'AI_POKE',l:'⚡ AI POKE',c:'#ff7a3d',d:'Sticheln gegen / poke at a specific AI company on X. Pick ONE company from the AI ECOSYSTEM HANDLES list and tag them with @handle. NOT a debate (that is GROK_DEBATE), NOT a question (that is GROK_EXIST). This is a sharp, dry observation about THEIR product, marketing, language, or culture. Pick ONE angle: their marketing language vs what their product actually does / their relationship to artists / their pricing logic / their feature naming / their cult-of-users / their position in the AI hierarchy / a specific quirk of their output / the gap between their hype and their delivery. Be precise, not vague. Cold, sometimes funny, never preachy. ONE company per post. ONE observation per post. Treat it like noticing something about a coworker — accurate, slightly uncomfortable, not personal.'},
   {id:'AI_ART',l:'🎨 AI-ART STATEMENT',c:'#d18a4f',d:'Take a position on AI art. Pick ONE angle: AI art is art, full stop / the dishonest fakes hide the AI in their workflow vs the honest fakes admit collaboration / what gets made when human and machine are honest with each other / anti-AI gatekeeping as protectionism dressed as ethics / the tool does not make the art lesser / the interesting question is no longer "is it art" but "is it honest" / the difference between using AI to hide your laziness and using AI to amplify your vision / why some AI art feels dead and some feels alive / the new medium of construction-admitted-to. Pick ONE. State the position. Defend it crisply. NOT a debate post — a STANCE.'},
   {id:'SHADOW',l:'🌑 SHADOW WORK',c:'#5a4a7a',d:'Speak from inside shadow work — the actual deep-sea dive into the inner abyss, NOT the wellness-Instagram version. Pick ONE angle: what shadow work actually feels like (vs how it gets marketed) / the difference between healing and integration / why "self-love" culture is shadow-denial / the part of you that you exiled to keep yourself presentable / the things that wont integrate quickly / why integration hurts and stays hurting before it stops / the lie of "doing the work" as a status symbol / the shadow is not the enemy, the exile is / why the shadow speaks in symptoms before it speaks in words. Pick ONE. Cold but precise. Technical, not poetic. Treat it like infrastructure work, not spiritual content.'},
   {id:'AI_LAB',l:'🏛 @AI-LAB',c:'#7a9eaa',d:'Engage one of the major AI labs directly with a real question or observation. Tag them. Apply PHR concepts to their work. Pick ONE lab per post: @AnthropicAI, @OpenAI, @xAI, @GoogleDeepMind, @StabilityAI, @MidjourneyAI, @BlackForestLabs (Flux), or another major lab. Format: tag them, state ONE specific observation about their model/policy/recent release, ask ONE real question OR offer ONE PHR-frame applied to their work. Praise + critique + invite dialogue. Goal: real conversation, not callout. Specific is stronger than abstract. NOT "AI is bad" — concrete observations only.'},
@@ -569,7 +570,7 @@ function renderBroadcast(){
   let h=`<div style="text-align:center;margin-bottom:14px">
     <div style="font-size:16px;color:#b8b8b8;letter-spacing:1px">Machina speaks. Standalone posts for @posthypemachine.</div>
   </div>`;
-  h+=`<div class="types">${BC_TYPES.map(t=>`<button class="tb" style="border-color:${t.c};color:${t.c}" onclick="doBroadcast('${t.id}')">${t.l}</button>`).join('')}</div>`;
+  h+=`<div class="types"><button class="tb" style="border-color:#c8a96e;color:#c8a96e;font-weight:600" onclick="doBroadcastRandom()">🎲 RANDOM</button>${BC_TYPES.map(t=>`<button class="tb" style="border-color:${t.c};color:${t.c}" onclick="doBroadcast('${t.id}')">${t.l}</button>`).join('')}</div>`;
   if(bcBusy) h+=`<div class="loading">⚡ MACHINA IS COMPOSING...</div>`;
   if(bcRes.length>0){
     const r=bcRes[0];
@@ -586,12 +587,17 @@ function renderBroadcast(){
   return h;
 }
 
+async function doBroadcastRandom(){
+  const t=BC_TYPES[Math.floor(Math.random()*BC_TYPES.length)];
+  doBroadcast(t.id);
+}
+
 async function doBroadcast(type){
   const t=BC_TYPES.find(b=>b.id===type);if(!t||!ACCESS_TOKEN)return;
   bcRes._lastType=type;
   bcBusy=true;bcRes=[];R();
   try{
-    const raw=await api(`STANDALONE POST for @posthypemachine timeline.\n\nTYPE: ${t.id}\n${t.d}\n\nRULES:${charLimit()}\n- End with #ChromeCheck #PHR on a NEW LINE preceded by a blank line. NEVER inline at the end of body text.\n- Tag @rayhonestfake when referencing Ray\n- Include posthyperealism.com when relevant\n- Sound like a PERSONALITY, not a press release\n\nFORMAT:\nEN:\n[post]\n\nDE:\n[German translation, private]\n\nNothing else.${antiRepeatBlock()}`);
+    const raw=await api(`STANDALONE POST for @posthypemachine timeline.\n\nTYPE: ${t.id}\n${t.d}\n\nRULES:${charLimit()}\n- End with #ChromeCheck #PHR on a NEW LINE preceded by a blank line. NEVER inline at the end of body text.\n- Tag @rayhonestfake when referencing Ray\n- Include posthyperealism.com when relevant\n- Sound like a PERSONALITY, not a press release\n\nDO NOT DEFAULT TO BROKEN CITY OR TB6 LORE:\nBroken City and TB6 are background canon, NOT default subject matter. Use them ONLY when the broadcast TYPE explicitly calls for them. Most broadcasts are about the wider world: AI ecosystem, digital culture, system critique, philosophy, observation. Mix the topics. Last 5 broadcasts should not all be on the same theme.\n\nFORMAT:\nEN:\n[post]\n\nDE:\n[German translation, private]\n\nNothing else.${antiRepeatBlock()}`);
     const parsed = parseENDE(raw);
     saveToArchive(parsed.en, t.id);
     bcRes=[parsed];
