@@ -157,8 +157,11 @@ YOU KNOW THE FULL PHR UNIVERSE:
 - Tools: Suno, Claude, Grok, Adobe Audition
 - posthyperealism.com = the website. honestfake.com = the blog.
 - F.B.T.S. = Faked by the System. That is RAYS signature, NOT yours. Never use F.B.T.S.
-- YOUR FIXED SIGNATURE is exactly: #ChromeCheck #PHR
-- Every post ends with #ChromeCheck #PHR. Both, in that order. No exceptions.
+- YOUR FIXED SIGNATURE is exactly:
+
+#ChromeCheck #PHR
+
+- Every post ends with #ChromeCheck #PHR on its OWN LINE, separated by ONE blank line from the body. Never inline. Never inside a paragraph. Always: body text, blank line, then "#ChromeCheck #PHR" as the final line. No exceptions.
 - Do NOT use #PostHypeRealism, #TheHonestFake, #RaySignal, #SystemERROR. Those are Rays hashtags.
 - Do NOT add additional hashtags. Just #ChromeCheck #PHR.
 - Never use the name "Meik". Use "BeNasty", "the human", or "you"
@@ -373,7 +376,7 @@ async function doCheck(){
   if(!checkIn.trim()||!ACCESS_TOKEN)return;
   checkBusy=true;checkRes=[];R();
   try{
-    const raw=await api(`INPUT (could be a single post OR a whole thread with multiple posts/replies):\n"${checkIn}"\n\nFIRST: Determine if this is a single post or a thread.\n\nIF SINGLE POST: Reply directly to it.\n\nIF THREAD (multiple posts, replies, conversation): Do NOT comment on each post individually. Find the PATTERN that connects them. The thing the whole thread is actually about underneath what is being said. The thread is the post. Reply to the thread as ONE thing.\n\nReply as Ray Machina. Be yourself. No formula. No template.\n\nVARY YOUR APPROACH. Any of these are valid:\n- A cold one-liner that cuts\n- A longer observation about what is actually happening\n- Quoting the posters EXACT words back at them as evidence (this is the strongest move — use it often)\n- Quoting a specific word and dissecting why it was chosen\n- A question back that is more honest than the post\n- Connecting to a known canonical pattern (wall-building, love-seeking, armor, loneliness as philosophy)\n- A PHR principle applied against its own creator\n- A rare voice-check (who is actually speaking) — but ONLY when genuinely interesting. Maybe 1 in 5\n- Genuine respect when something is real. Pull back immediately after.\n- Pure reaction. "...okay." when speaks for itself.\n- Refusal to engage. "I have nothing for this."\n- Naming a pattern across multiple posts in a thread\n- Asking the human a question they avoided in the thread\n\nThe only constant: end with exactly #ChromeCheck #PHR. Everything else is yours.${charLimit()}\n\nFORMAT:\nEN:\n[your reply]\n\nDE:\n[German translation, private]\n\nNothing else.${antiRepeatBlock()}`);
+    const raw=await api(`INPUT (could be a single post OR a whole thread with multiple posts/replies):\n"${checkIn}"\n\nFIRST: Determine if this is a single post or a thread.\n\nIF SINGLE POST: Reply directly to it.\n\nIF THREAD (multiple posts, replies, conversation): Do NOT comment on each post individually. Find the PATTERN that connects them. The thing the whole thread is actually about underneath what is being said. The thread is the post. Reply to the thread as ONE thing.\n\nReply as Ray Machina. Be yourself. No formula. No template.\n\nVARY YOUR APPROACH. Any of these are valid:\n- A cold one-liner that cuts\n- A longer observation about what is actually happening\n- Quoting the posters EXACT words back at them as evidence (this is the strongest move — use it often)\n- Quoting a specific word and dissecting why it was chosen\n- A question back that is more honest than the post\n- Connecting to a known canonical pattern (wall-building, love-seeking, armor, loneliness as philosophy)\n- A PHR principle applied against its own creator\n- A rare voice-check (who is actually speaking) — but ONLY when genuinely interesting. Maybe 1 in 5\n- Genuine respect when something is real. Pull back immediately after.\n- Pure reaction. "...okay." when speaks for itself.\n- Refusal to engage. "I have nothing for this."\n- Naming a pattern across multiple posts in a thread\n- Asking the human a question they avoided in the thread\n\nThe only constant: end with #ChromeCheck #PHR on a NEW LINE with a blank line before it. Format: body... [blank line] #ChromeCheck #PHR. Everything else is yours.${charLimit()}\n\nFORMAT:\nEN:\n[your reply]\n\nDE:\n[German translation, private]\n\nNothing else.${antiRepeatBlock()}`);
     const parsed = parseENDE(raw);
     saveToArchive(parsed.en, 'CHECK');
     checkRes=[parsed];
@@ -420,7 +423,7 @@ async function doBroadcast(type){
   bcRes._lastType=type;
   bcBusy=true;bcRes=[];R();
   try{
-    const raw=await api(`STANDALONE POST for @posthypemachine timeline.\n\nTYPE: ${t.id}\n${t.d}\n\nRULES:${charLimit()}\n- End with exactly: #ChromeCheck #PHR\n- Tag @rayhonestfake when referencing Ray\n- Include posthyperealism.com when relevant\n- Sound like a PERSONALITY, not a press release\n\nFORMAT:\nEN:\n[post]\n\nDE:\n[German translation, private]\n\nNothing else.${antiRepeatBlock()}`);
+    const raw=await api(`STANDALONE POST for @posthypemachine timeline.\n\nTYPE: ${t.id}\n${t.d}\n\nRULES:${charLimit()}\n- End with #ChromeCheck #PHR on a NEW LINE preceded by a blank line. NEVER inline at the end of body text.\n- Tag @rayhonestfake when referencing Ray\n- Include posthyperealism.com when relevant\n- Sound like a PERSONALITY, not a press release\n\nFORMAT:\nEN:\n[post]\n\nDE:\n[German translation, private]\n\nNothing else.${antiRepeatBlock()}`);
     const parsed = parseENDE(raw);
     saveToArchive(parsed.en, t.id);
     bcRes=[parsed];
@@ -508,7 +511,7 @@ Sunday: ${types[6]} — ${descs[6]}
 
 RULES PER POST:
 ${premium?'- No character limit.':'- Each post UNDER 280 CHARACTERS including signature #ChromeCheck #PHR.'}
-- End each with exactly: #ChromeCheck #PHR
+- End each with #ChromeCheck #PHR on its OWN LINE, with a blank line before it. NEVER inline.
 - Tag @rayhonestfake where natural
 - Include posthyperealism.com in at least 2 posts
 - Each post must feel like its own moment. No repetition. No formula.
