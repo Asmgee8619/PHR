@@ -410,15 +410,11 @@ async function api(prompt, max=1500, opts={}) {
 }
 
 // Which broadcast types benefit from web search
+// Conservative: only ECOSYSTEM (news context) and WITNESS (cultural moments)
+// Other modes work better from internal voice without search distraction
 const SEARCH_TYPES = {
-  'AI_HIGHLIGHT': 'recent positive news, launches, releases, milestones, or announcements from AI companies — Suno, Anthropic, OpenAI, Midjourney, Adobe, etc. Find something to celebrate.',
-  'AI_POKE': 'recent news, launches, announcements, or controversies from the named AI company on X/Twitter',
-  'WITNESS': 'current trending cultural moments, viral posts, recent influencer drama, or this week patterns on X',
-  'GROK_EXIST': 'recent posts from @grok on X — what Grok has been saying or replying to lately',
-  'GROK_PHR': 'recent posts from @grok on X to ground the PHR question in something concrete Grok actually said',
-  'GROK_DEBATE': 'recent positions Grok has taken on X — find a real recent claim to debate',
-  'GROK_MIRROR': 'recent posts from @grok on X — find a typical recent Grok pattern to mirror',
-  'SPOTLIGHT': 'recent positive announcements, launches, features, partnerships, or developments from one of the AI companies (Anthropic, OpenAI, Suno, Midjourney, Adobe, Runway, ElevenLabs, Black Forest Labs, Krea, Magnific, Topaz, Higgsfield, Luma, Hedra, Pika, Vidu, Kling, Leonardo, Anthropic, ComfyUI, Grok)'
+  'ECOSYSTEM': 'recent positive news, launches, releases, or announcements from AI ecosystem companies — for grounding the post in something real and current',
+  'WITNESS': 'current trending cultural moments, viral patterns, or this-week observations on X — for grounding the cultural observation',
 };
 
 // Compute search opts based on user toggle and type
@@ -997,21 +993,19 @@ function renderBatch(){
 }
 
 function buildBatchPlan(){
-  const grokTypes=['GROK_EXIST','GROK_PHR','GROK_DEBATE','GROK_MIRROR'];
-  const phrTypes=['PROMO','STATUS','RECRUIT'];
-  const stylisticTypes=['GLITCH','REDACTED','SELF_DOUBT'];
-  const witnessTypes=['WITNESS','AI_POKE'];
-  const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
-  
+  // Active modes only: WITNESS, ECOSYSTEM, GROK, PHR_VOICE, SHADOW
+  // Plan for 7 days: balance witness/cultural posts (which perform best) with PHR-position and machine-self-reflection
   return [
-    'WITNESS',
-    'AI_POKE',
-    'META',
-    pick(grokTypes),
-    pick(phrTypes),
-    pick(witnessTypes),
-    pick(stylisticTypes),
+    'WITNESS',     // Day 1 — cultural observation (your strength)
+    'PHR_VOICE',   // Day 2 — PHR position
+    'WITNESS',     // Day 3 — cultural observation
+    'SHADOW',      // Day 4 — shadow work
+    'PHR_VOICE',   // Day 5 — PHR position / self-reflection
+    'WITNESS',     // Day 6 — cultural observation
+    'SHADOW',      // Day 7 — shadow work
   ];
+  // Note: ECOSYSTEM and GROK are NOT in batch plan because they require fresh news/context.
+  // Generate them manually when you have a real moment to react to.
 }
 
 async function generateBatchPost(typeId, seenSoFar){
