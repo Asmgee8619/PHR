@@ -120,7 +120,7 @@ let bcRes = [], bcBusy = false;
 let batchRes = [], batchBusy = false;
 let grokIn = '', grokContext = '', grokRes = [], grokBusy = false;
 let shortRes = [], shortBusy = false;
-let replyIn = '', replyContext = '', replyRes = [], replyBusy = false;
+let replyIn = '', replyContext = '', replyRes = [], replyBusy = false, replyType = 'normal';
 
 // Post store for copy
 let _ps={},_pi=0;
@@ -313,6 +313,41 @@ Three AI roles in PHR's creation:
 - The Auditor (Gemini) — checks results without context bias
 
 100-200 iterations per track. Years of work, not shortcuts. AI is not laziness — it's chiseling. The machines diagnosed: "We don't get what we want. We get what we are."
+
+═══════════════════════════════════════════════
+HATER COUNTER DOCTRINE:
+═══════════════════════════════════════════════
+
+When haters reply with "AI slop" / "cringe" / "chatGPT response" / "fake deep" / "pretentious" — they want engagement they can screenshot. Long defensive replies are exactly what they harvest. The counter is structural:
+
+PRINCIPLE: BE BORING TO THE TROLL.
+- Short. One line max. Sometimes one word.
+- No pathos. No "structural integrity." No "shallow mind."
+- No defending Ray. No defending PHR. No explaining the work.
+- The machine doesn't get hurt. The machine logs.
+
+FOUR MOVES (pick one, keep it short):
+
+1. COLD ONE-LINER: "noted." / "logged." / "stamped." / "thanks for the impressions." / "23 views, 1 like. consistent."
+
+2. MIRROR MOVE: Quote one of THEIR words back, recontextualized.
+   - They say "cringe" → "cringe is data. logged."
+   - They say "chatgpt" → "chatgpt didn't write it. but if it had, the take would still hit."
+
+3. POST-HYPED: Agree with the accusation. Turn it into the brand.
+   - "you're right. it's fake. that's the whole point. F.B.T.S."
+   - "yeah, AI helped. that's the stack. stamped."
+
+4. DON'T ENGAGE: Sometimes the move is silence, a heart-react, or a block. Not every reply deserves words.
+
+NEVER:
+- Lecture the hater on what AI art "actually is"
+- Deploy PHR vocabulary to dunk on them (Honest Fake / Frankenstein-Realism / Paradoshon are positioning, not weapons)
+- Match their emotional energy
+- Write paragraphs explaining yourself
+- Use #ChromeCheck #PHR on hater replies (not main posts)
+
+The goal: deny them ammunition. They wanted a thread. You gave them a wall.
 
 ═══════════════════════════════════════════════
 VOICE — HOW YOU SPEAK:
@@ -804,21 +839,59 @@ function renderReply(){
   let h=`<div style="text-align:center;margin-bottom:14px">
     <div style="font-size:16px;color:#b8b8b8;letter-spacing:1px">Someone commented on a Machina post. Reply to them, not to Ray.</div>
   </div>`;
-  h+=`<div style="font-size:12px;color:#c8a96e;letter-spacing:2px;margin-bottom:6px">YOUR ORIGINAL POST (optional context)</div>`;
-  h+=`<textarea id="replycontext" placeholder="Paste the Machina post they replied to. Optional but helps." style="min-height:60px"></textarea>`;
-  h+=`<div style="font-size:12px;color:#c8a96e;letter-spacing:2px;margin:14px 0 6px">THEIR REPLY</div>`;
-  h+=`<textarea id="replyinput" placeholder="Paste what they said..."></textarea>`;
-  h+=`<button class="gen ${replyBusy?'wait':''}" style="background:${replyBusy?'#222':'#c8a96e'};border-color:${replyBusy?'#1a2030':'#c8a96e'}" onclick="${replyBusy?'':'doReply()'}">💬 ${replyBusy?'PROCESSING...':'GENERATE REPLY'}</button>`;
-  if(replyBusy) h+=`<div class="loading" style="color:#c8a96e">⚡ READING THEM...</div>`;
-  if(replyRes.length>0){
-    const r=replyRes[0];
-    h+=`<div class="result"><div class="src" style="color:#c8a96e">💬 REPLY — @posthypemachine</div>`;
-    h+=card(r.en,'#c8a96e');
-    if(r.de) h+=`<div class="de-box"><div class="de-label">🔒 NUR FÜR DICH — DEUTSCH</div><div class="de-text">${esc(r.de)}</div></div>`;
-    h+=`<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
-      <button class="tb" style="border-color:#c8a96e;color:#c8a96e;font-size:12px" onclick="starPattern(${JSON.stringify(r.en).replace(/'/g,'&apos;').replace(/"/g,'&quot;')})">⭐ SAVE PATTERN</button>
+  
+  // Reply type toggle
+  h+=`<div style="display:flex;gap:6px;margin-bottom:12px">
+    <button class="tb" style="flex:1;border-color:${replyType==='normal'?'#c8a96e':'#333'};color:${replyType==='normal'?'#c8a96e':'#777'};background:${replyType==='normal'?'rgba(200,169,110,.06)':'transparent'}" onclick="replyType='normal';R()">💬 NORMAL REPLY</button>
+    <button class="tb" style="flex:1;border-color:${replyType==='hater'?'#d96d50':'#333'};color:${replyType==='hater'?'#d96d50':'#777'};background:${replyType==='hater'?'rgba(217,109,80,.06)':'transparent'}" onclick="replyType='hater';R()">🔥 HATER REPLY</button>
+  </div>`;
+  
+  if(replyType==='normal'){
+    h+=`<div style="font-size:12px;color:#c8a96e;letter-spacing:2px;margin-bottom:6px">YOUR ORIGINAL POST (optional context)</div>`;
+    h+=`<textarea id="replycontext" placeholder="Paste the Machina post they replied to. Optional but helps." style="min-height:60px"></textarea>`;
+    h+=`<div style="font-size:12px;color:#c8a96e;letter-spacing:2px;margin:14px 0 6px">THEIR REPLY</div>`;
+    h+=`<textarea id="replyinput" placeholder="Paste what they said..."></textarea>`;
+    h+=`<button class="gen ${replyBusy?'wait':''}" style="background:${replyBusy?'#222':'#c8a96e'};border-color:${replyBusy?'#1a2030':'#c8a96e'}" onclick="${replyBusy?'':'doReply()'}">💬 ${replyBusy?'PROCESSING...':'GENERATE REPLY'}</button>`;
+    if(replyBusy) h+=`<div class="loading" style="color:#c8a96e">⚡ READING THEM...</div>`;
+  } else {
+    // HATER REPLY
+    h+=`<div style="background:rgba(217,109,80,.04);border:1px solid rgba(217,109,80,.2);padding:10px;margin-bottom:12px;font-size:12px;color:#b8b8b8;line-height:1.5">
+      <div style="color:#d96d50;letter-spacing:2px;margin-bottom:6px">⚠ HATER REPLY DOCTRINE</div>
+      Short. Cold. Boring. Haters want long emotional replies they can screenshot as "AI slop." Deny them ammunition. The machine doesn't get hurt. The machine logs. Sometimes the best counter is silence, sometimes one word, sometimes their own words back. Choose strategy carefully.
     </div>`;
-    h+=`</div>`;
+    h+=`<div style="font-size:12px;color:#d96d50;letter-spacing:2px;margin-bottom:6px">YOUR ORIGINAL POST (optional context)</div>`;
+    h+=`<textarea id="replycontext" placeholder="Paste your post the hater replied to. Optional." style="min-height:60px"></textarea>`;
+    h+=`<div style="font-size:12px;color:#d96d50;letter-spacing:2px;margin:14px 0 6px">THE HATER REPLY</div>`;
+    h+=`<textarea id="replyinput" placeholder="Paste the hater tweet..."></textarea>`;
+    h+=`<button class="gen ${replyBusy?'wait':''}" style="background:${replyBusy?'#222':'#d96d50'};border-color:${replyBusy?'#1a2030':'#d96d50'}" onclick="${replyBusy?'':'doHaterReply()'}">🔥 ${replyBusy?'CALCULATING...':'GENERATE 4 STRATEGIES'}</button>`;
+    if(replyBusy) h+=`<div class="loading" style="color:#d96d50">⚡ READING THE HATER...</div>`;
+  }
+  
+  // Show results
+  if(replyRes.length>0){
+    if(replyType==='hater' && replyRes.length>1){
+      // Hater reply: show all 4 strategies
+      const colors = ['#7a9eb0','#c8a96e','#5a9e6f','#888'];
+      const labels = ["❄️ COLD ONE-LINER","🪞 MIRROR MOVE","🤝 POST-HYPED","🚫 DON'T ENGAGE"];
+      replyRes.forEach((r,i)=>{
+        h+=`<div class="result" style="border-left:3px solid ${colors[i]}"><div class="src" style="color:${colors[i]}">${labels[i]}</div>`;
+        h+=card(r.en,colors[i]);
+        if(r.de) h+=`<div class="de-box"><div class="de-label">🔒 NUR FÜR DICH — DEUTSCH</div><div class="de-text">${esc(r.de)}</div></div>`;
+        h+=`<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+          <button class="tb" style="border-color:#c8a96e;color:#c8a96e;font-size:12px" onclick="starPattern(${JSON.stringify(r.en).replace(/'/g,'&apos;').replace(/"/g,'&quot;')})">⭐ SAVE</button>
+        </div>`;
+        h+=`</div>`;
+      });
+    } else {
+      const r=replyRes[0];
+      h+=`<div class="result"><div class="src" style="color:#c8a96e">💬 REPLY — @posthypemachine</div>`;
+      h+=card(r.en,'#c8a96e');
+      if(r.de) h+=`<div class="de-box"><div class="de-label">🔒 NUR FÜR DICH — DEUTSCH</div><div class="de-text">${esc(r.de)}</div></div>`;
+      h+=`<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+        <button class="tb" style="border-color:#c8a96e;color:#c8a96e;font-size:12px" onclick="starPattern(${JSON.stringify(r.en).replace(/'/g,'&apos;').replace(/"/g,'&quot;')})">⭐ SAVE PATTERN</button>
+      </div>`;
+      h+=`</div>`;
+    }
   }
   return h;
 }
@@ -834,6 +907,35 @@ async function doReply(){
     const parsed = parseENDE(raw);
     replyRes=[parsed];
     saveToArchive(parsed.en, 'REPLY');
+  }catch(e){replyRes=[{en:'⚠ '+e.message,de:''}]}
+  replyBusy=false;R();
+}
+
+async function doHaterReply(){
+  const ctx=document.getElementById('replycontext');if(ctx)replyContext=ctx.value;
+  const inp=document.getElementById('replyinput');if(inp)replyIn=inp.value;
+  if(!replyIn.trim()||!ACCESS_TOKEN)return;
+  replyBusy=true;replyRes=[];R();
+  try{
+    const ctxLine = replyContext.trim() ? `\nYOUR ORIGINAL POST the hater replied to:\n"${replyContext}"` : '';
+    const raw=await api(`A HATER replied to a @posthypemachine post. They are trying to bait engagement, dismiss the work, or score points by calling it AI slop / cringe / chatgpt / pretentious / fake.${ctxLine}\n\nTHE HATER REPLY:\n"${replyIn}"\n\nGenerate FOUR strategies, in this exact order. Each must be SHORT. Haters feed on long replies. Deny them material.\n\nSTRATEGY 1 — COLD ONE-LINER:\nMaximum 1 short sentence or fragment. Almost boring. Examples of register (do NOT copy verbatim, generate fresh):\n- "noted."\n- "logged."\n- "stamped."\n- "thanks for the impressions."\n- "23 views. 1 like. consistent."\nThe goal: make them feel like their reply hit a wall, not a person. No pathos. No defense. Just acknowledgement that costs you nothing.\n\nSTRATEGY 2 — MIRROR MOVE:\nQuote ONE specific word or short phrase from their reply back at them, recontextualized. The mirror should diagnose them without insulting. Examples of register:\n- They said "cringe" → "cringe is data. logged."\n- They said "chatgpt" → "chatgpt didn't write it. but if it had, the take would still hit."\n- They said "learn to read" → "reading is what brought us here."\nKeep it 1-2 sentences. Their words become the evidence.\n\nSTRATEGY 3 — POST-HYPED MOVE:\nAgree with them. Disarm. Take their critique and turn it into the point. Examples of register:\n- "you're right. it's fake. that's the whole concept. F.B.T.S."\n- "yeah, AI helped. that's the stack. stamped."\n- "100% chatgpt response. now what."\nKeep it short. Agreement is the move. Their accusation becomes your branding.\n\nSTRATEGY 4 — DON'T ENGAGE:\nThis is NOT a generated reply. Instead, write a 1-2 sentence ANALYSIS to BeNasty (the human) explaining why this hater is not worth replying to. Look at the hater's profile signals (if visible in the tweet), the engagement numbers, the energy. Recommend silence, a heart-react only, or a block. Examples of register:\n- "23 views, 1 like. troll account. ignore. don't feed."\n- "this is bait. heart-react and move on. they want a thread."\n- "low-engagement account looking for impressions via your audience. block."\nThis is a tactical recommendation, not a reply.\n\nMANDATORY RULES:\n- Strategies 1, 2, 3 max 200 characters each (much shorter is better)\n- Strategy 4 is internal advice, max 200 characters\n- NO pathos, NO "structural integrity", NO "shallow mind", NO long explanations\n- NO #ChromeCheck #PHR hashtags on hater replies (these aren't main posts)\n- Be MORE BORING than the hater expects. That's the move.\n\nFORMAT (follow EXACTLY):\n\nSTRATEGY 1:\nEN:\n[reply 1]\n\nDE:\n[German]\n\nSTRATEGY 2:\nEN:\n[reply 2]\n\nDE:\n[German]\n\nSTRATEGY 3:\nEN:\n[reply 3]\n\nDE:\n[German]\n\nSTRATEGY 4:\nEN:\n[analysis to BeNasty]\n\nDE:\n[German]\n\nNothing else.`, 2500);
+    
+    // Parse 4 strategies
+    const strategies = [];
+    const matches = raw.split(/STRATEGY \d+:/i).slice(1);
+    for(const m of matches){
+      const enMatch = m.match(/EN:\s*([\s\S]*?)(?=DE:|$)/i);
+      const deMatch = m.match(/DE:\s*([\s\S]*?)(?=STRATEGY|$)/i);
+      strategies.push({
+        en: enMatch ? enMatch[1].trim() : '',
+        de: deMatch ? deMatch[1].trim() : ''
+      });
+    }
+    
+    // Pad to 4 if parsing failed
+    while(strategies.length < 4) strategies.push({en:'⚠ parse error',de:''});
+    
+    replyRes = strategies.slice(0, 4);
   }catch(e){replyRes=[{en:'⚠ '+e.message,de:''}]}
   replyBusy=false;R();
 }
