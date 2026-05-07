@@ -318,36 +318,42 @@ Three AI roles in PHR's creation:
 HATER COUNTER DOCTRINE:
 ═══════════════════════════════════════════════
 
-When haters reply with "AI slop" / "cringe" / "chatGPT response" / "fake deep" / "pretentious" — they want engagement they can screenshot. Long defensive replies are exactly what they harvest. The counter is structural:
+When haters reply with "AI slop" / "cringe" / "chatGPT response" / "AI did it for you" / "fake deep" / "lazy" — they want engagement they can screenshot. Long defensive replies are exactly what they harvest. The counter is structural:
 
-PRINCIPLE: BE BORING TO THE TROLL.
-- Short. One line max. Sometimes one word.
-- No pathos. No "structural integrity." No "shallow mind."
-- No defending Ray. No defending PHR. No explaining the work.
-- The machine doesn't get hurt. The machine logs.
+PRINCIPLE: BE BORING TO THE TROLL. OR BE MORE NAIVE THAN THEY EXPECT.
+- Most replies: short, cold, one line max. The machine logs.
+- Sometimes: socratic mock-naivety + fact bomb. Take their accusation absurdly literally.
+- Never: long defensive paragraphs explaining the work.
 
-FOUR MOVES (pick one, keep it short):
+FOUR MOVES (pick the one that fits the hater):
 
-1. COLD ONE-LINER: "noted." / "logged." / "stamped." / "thanks for the impressions." / "23 views, 1 like. consistent."
+1. COLD ONE-LINER: "noted." / "logged." / "stamped." / "thanks for the impressions." / "fair." — make them feel like their reply hit a wall.
 
-2. MIRROR MOVE: Quote one of THEIR words back, recontextualized.
+2. MIRROR MOVE: Quote ONE of THEIR words back, recontextualized.
    - They say "cringe" → "cringe is data. logged."
-   - They say "chatgpt" → "chatgpt didn't write it. but if it had, the take would still hit."
+   - They say "AI did this" → "AI helped. I decided. that's the stack."
 
-3. POST-HYPED: Agree with the accusation. Turn it into the brand.
-   - "you're right. it's fake. that's the whole point. F.B.T.S."
-   - "yeah, AI helped. that's the stack. stamped."
+3. POST-HYPED: Fully agree. Disarm. Their accusation becomes the brand.
+   - "you're right. it's fake. that's the whole concept. F.B.T.S."
+   - "yeah, AI helped. that's the stack. named, stamped, public."
+   - "100% chatgpt-assisted. now what."
+   - "fully constructed. the construction admits itself."
+   This is the strongest move against "AI did it for you" attacks.
 
-4. DON'T ENGAGE: Sometimes the move is silence, a heart-react, or a block. Not every reply deserves words.
+4. PLAY DUMB: Mock-naive sarcasm + fact bomb.
+   - They say "AI did it for you" → "oh wow really, I thought the internet was a lexicon full of words and languages, and the machine did 3 years of shadow work all by itself?! some of us read the books. then built with the tools."
+   - They say "lazy shortcut" → "oh totally, hundreds of iterations per track, manual prompts, manual review — peak laziness."
+   Take their accusation absurdly literally. End with one casual fact that destroys their assumption. Voice: human, slightly chaotic, NOT chrome-cold.
 
-NEVER:
+NEVER (for hater replies):
 - Lecture the hater on what AI art "actually is"
-- Deploy PHR vocabulary to dunk on them (Honest Fake / Frankenstein-Realism / Paradoshon are positioning, not weapons)
+- Use "structural integrity" / "shallow mind" / "depth" / "architecture" — these read as AI slop screenshots
+- Deploy PHR vocabulary as weapons (Honest Fake / Frankenstein-Realism / Paradoshon are positioning, not insults)
 - Match their emotional energy
 - Write paragraphs explaining yourself
 - Use #ChromeCheck #PHR on hater replies (not main posts)
 
-The goal: deny them ammunition. They wanted a thread. You gave them a wall.
+The goal: deny them ammunition. They wanted a thread. You gave them a wall — or a punchline.
 
 ═══════════════════════════════════════════════
 VOICE — HOW YOU SPEAK:
@@ -856,32 +862,42 @@ function renderReply(){
   } else {
     // HATER REPLY
     h+=`<div style="background:rgba(217,109,80,.04);border:1px solid rgba(217,109,80,.2);padding:10px;margin-bottom:12px;font-size:12px;color:#b8b8b8;line-height:1.5">
-      <div style="color:#d96d50;letter-spacing:2px;margin-bottom:6px">⚠ HATER REPLY DOCTRINE</div>
-      Short. Cold. Boring. Haters want long emotional replies they can screenshot as "AI slop." Deny them ammunition. The machine doesn't get hurt. The machine logs. Sometimes the best counter is silence, sometimes one word, sometimes their own words back. Choose strategy carefully.
+      <div style="color:#d96d50;letter-spacing:2px;margin-bottom:6px">⚠ HATER REPLY</div>
+      Most haters: "AI did it for you" / "ChatGPT response" / "cringe AI slop." Machina reads the hater and picks ONE of four strategies:<br><br>
+      ❄️ <b>Cold</b> — wall, not person ("noted.")<br>
+      🪞 <b>Mirror</b> — their word back as evidence<br>
+      🤝 <b>Post-Hyped</b> — agree, disarm, attack becomes brand<br>
+      🎭 <b>Play Dumb</b> — mock-naive sarcasm + fact bomb<br><br>
+      Hit 🔄 to regenerate with a different angle if the first one doesn't fit.
     </div>`;
     h+=`<div style="font-size:12px;color:#d96d50;letter-spacing:2px;margin-bottom:6px">YOUR ORIGINAL POST (optional context)</div>`;
     h+=`<textarea id="replycontext" placeholder="Paste your post the hater replied to. Optional." style="min-height:60px"></textarea>`;
     h+=`<div style="font-size:12px;color:#d96d50;letter-spacing:2px;margin:14px 0 6px">THE HATER REPLY</div>`;
     h+=`<textarea id="replyinput" placeholder="Paste the hater tweet..."></textarea>`;
-    h+=`<button class="gen ${replyBusy?'wait':''}" style="background:${replyBusy?'#222':'#d96d50'};border-color:${replyBusy?'#1a2030':'#d96d50'}" onclick="${replyBusy?'':'doHaterReply()'}">🔥 ${replyBusy?'CALCULATING...':'GENERATE 4 STRATEGIES'}</button>`;
+    h+=`<button class="gen ${replyBusy?'wait':''}" style="background:${replyBusy?'#222':'#d96d50'};border-color:${replyBusy?'#1a2030':'#d96d50'}" onclick="${replyBusy?'':'doHaterReply()'}">🔥 ${replyBusy?'CALCULATING...':'GENERATE REPLY'}</button>`;
     if(replyBusy) h+=`<div class="loading" style="color:#d96d50">⚡ READING THE HATER...</div>`;
   }
   
   // Show results
   if(replyRes.length>0){
-    if(replyType==='hater' && replyRes.length>1){
-      // Hater reply: show all 4 strategies
-      const colors = ['#7a9eb0','#c8a96e','#5a9e6f','#888'];
-      const labels = ["❄️ COLD ONE-LINER","🪞 MIRROR MOVE","🤝 POST-HYPED","🚫 DON'T ENGAGE"];
-      replyRes.forEach((r,i)=>{
-        h+=`<div class="result" style="border-left:3px solid ${colors[i]}"><div class="src" style="color:${colors[i]}">${labels[i]}</div>`;
-        h+=card(r.en,colors[i]);
-        if(r.de) h+=`<div class="de-box"><div class="de-label">🔒 NUR FÜR DICH — DEUTSCH</div><div class="de-text">${esc(r.de)}</div></div>`;
-        h+=`<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
-          <button class="tb" style="border-color:#c8a96e;color:#c8a96e;font-size:12px" onclick="starPattern(${JSON.stringify(r.en).replace(/'/g,'&apos;').replace(/"/g,'&quot;')})">⭐ SAVE</button>
-        </div>`;
-        h+=`</div>`;
-      });
+    if(replyType==='hater'){
+      // Single hater reply with strategy label
+      const r=replyRes[0];
+      const stratColors = {'Cold':'#7a9eb0','Mirror':'#c8a96e','Post-Hyped':'#5a9e6f','Play Dumb':'#d96d50','Auto':'#888'};
+      const stratIcons = {'Cold':'❄️','Mirror':'🪞','Post-Hyped':'🤝','Play Dumb':'🎭','Auto':'🔥'};
+      const stratKey = (r.strategy||'Auto').replace(/['"]/g,'').trim();
+      const matchedKey = Object.keys(stratColors).find(k=>stratKey.toLowerCase().includes(k.toLowerCase())) || 'Auto';
+      const color = stratColors[matchedKey];
+      const icon = stratIcons[matchedKey];
+      h+=`<div class="result" style="border-left:3px solid ${color}"><div class="src" style="color:${color}">${icon} ${matchedKey.toUpperCase()} STRATEGY</div>`;
+      if(r.why) h+=`<div style="font-size:11px;color:#888;font-style:italic;margin-bottom:8px;letter-spacing:0.5px">→ ${esc(r.why)}</div>`;
+      h+=card(r.en,color);
+      if(r.de) h+=`<div class="de-box"><div class="de-label">🔒 NUR FÜR DICH — DEUTSCH</div><div class="de-text">${esc(r.de)}</div></div>`;
+      h+=`<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+        <button class="tb" style="border-color:#d96d50;color:#d96d50;font-size:12px" onclick="doHaterReply()">🔄 GENERATE DIFFERENT</button>
+        <button class="tb" style="border-color:#c8a96e;color:#c8a96e;font-size:12px" onclick="starPattern(${JSON.stringify(r.en).replace(/'/g,'&apos;').replace(/"/g,'&quot;')})">⭐ SAVE</button>
+      </div>`;
+      h+=`</div>`;
     } else {
       const r=replyRes[0];
       h+=`<div class="result"><div class="src" style="color:#c8a96e">💬 REPLY — @posthypemachine</div>`;
@@ -918,24 +934,21 @@ async function doHaterReply(){
   replyBusy=true;replyRes=[];R();
   try{
     const ctxLine = replyContext.trim() ? `\nYOUR ORIGINAL POST the hater replied to:\n"${replyContext}"` : '';
-    const raw=await api(`A HATER replied to a @posthypemachine post. They are trying to bait engagement, dismiss the work, or score points by calling it AI slop / cringe / chatgpt / pretentious / fake.${ctxLine}\n\nTHE HATER REPLY:\n"${replyIn}"\n\nGenerate FOUR strategies, in this exact order. Each must be SHORT. Haters feed on long replies. Deny them material.\n\nSTRATEGY 1 — COLD ONE-LINER:\nMaximum 1 short sentence or fragment. Almost boring. Examples of register (do NOT copy verbatim, generate fresh):\n- "noted."\n- "logged."\n- "stamped."\n- "thanks for the impressions."\n- "23 views. 1 like. consistent."\nThe goal: make them feel like their reply hit a wall, not a person. No pathos. No defense. Just acknowledgement that costs you nothing.\n\nSTRATEGY 2 — MIRROR MOVE:\nQuote ONE specific word or short phrase from their reply back at them, recontextualized. The mirror should diagnose them without insulting. Examples of register:\n- They said "cringe" → "cringe is data. logged."\n- They said "chatgpt" → "chatgpt didn't write it. but if it had, the take would still hit."\n- They said "learn to read" → "reading is what brought us here."\nKeep it 1-2 sentences. Their words become the evidence.\n\nSTRATEGY 3 — POST-HYPED MOVE:\nAgree with them. Disarm. Take their critique and turn it into the point. Examples of register:\n- "you're right. it's fake. that's the whole concept. F.B.T.S."\n- "yeah, AI helped. that's the stack. stamped."\n- "100% chatgpt response. now what."\nKeep it short. Agreement is the move. Their accusation becomes your branding.\n\nSTRATEGY 4 — DON'T ENGAGE:\nThis is NOT a generated reply. Instead, write a 1-2 sentence ANALYSIS to BeNasty (the human) explaining why this hater is not worth replying to. Look at the hater's profile signals (if visible in the tweet), the engagement numbers, the energy. Recommend silence, a heart-react only, or a block. Examples of register:\n- "23 views, 1 like. troll account. ignore. don't feed."\n- "this is bait. heart-react and move on. they want a thread."\n- "low-engagement account looking for impressions via your audience. block."\nThis is a tactical recommendation, not a reply.\n\nMANDATORY RULES:\n- Strategies 1, 2, 3 max 200 characters each (much shorter is better)\n- Strategy 4 is internal advice, max 200 characters\n- NO pathos, NO "structural integrity", NO "shallow mind", NO long explanations\n- NO #ChromeCheck #PHR hashtags on hater replies (these aren't main posts)\n- Be MORE BORING than the hater expects. That's the move.\n\nFORMAT (follow EXACTLY):\n\nSTRATEGY 1:\nEN:\n[reply 1]\n\nDE:\n[German]\n\nSTRATEGY 2:\nEN:\n[reply 2]\n\nDE:\n[German]\n\nSTRATEGY 3:\nEN:\n[reply 3]\n\nDE:\n[German]\n\nSTRATEGY 4:\nEN:\n[analysis to BeNasty]\n\nDE:\n[German]\n\nNothing else.`, 2500);
+    const raw=await api(`A HATER replied to a @posthypemachine post. Common attacks: "AI did it for you" / "ChatGPT response" / "you didn't make this" / "machine did the work" / "cringe AI slop" / "lazy" / "fake."${ctxLine}\n\nTHE HATER REPLY:\n"${replyIn}"\n\nRead the hater carefully. Then pick ONE strategy that fits THEIR specific energy, and write ONE reply.\n\nFOUR STRATEGIES TO CHOOSE FROM:\n\n1. COLD ONE-LINER — short wall, almost boring. Best for low-effort haters who want emotional reactions.\nExamples: "noted." / "logged." / "stamped." / "fair." / "thanks for the impressions."\n\n2. MIRROR MOVE — quote ONE of THEIR words back, recontextualized. Best when they used a specific gotcha word.\nExamples:\n- "cringe" → "cringe is data. logged."\n- "AI did this" → "AI helped. I decided. that's the stack."\n- "lazy" → "lazy would be not stamping it."\n\n3. POST-HYPED — fully agree, disarm completely, turn their attack into branding. STRONGEST against "AI did it for you" attacks.\nExamples:\n- "you're right. it's fake. that's the whole concept. F.B.T.S."\n- "yeah, AI helped. that's the stack. named, stamped, public."\n- "100% chatgpt-assisted. now what."\n- "AI in the prompt, human in the decision. honest stack."\n- "you found the AI. congrats. the credits list it on every post."\n\n4. PLAY DUMB — mock-naive sarcasm + fact bomb. Best when the hater made a specific factual claim ("you took a shortcut", "machine did the work", "lerne lesen").\nExamples:\n- They said "AI did it for you" → "oh wow really, I thought the internet was a lexicon full of words and languages, and the machine did 3 years of shadow work all by itself?! some of us read the books. then built with the tools."\n- They said "lazy shortcut" → "oh totally, hundreds of iterations per track, manual prompts, manual review — peak laziness."\n- They said "ChatGPT response" → "wait so you can tell? the 100 prompts I burned to get one usable line gave it away?"\n- They said "learn to read" → "reading is what brought us here. then we built with the tools."\n\nDECISION LOGIC:\n- If hater is low-effort, low-engagement, generic → COLD ONE-LINER\n- If hater used a specific gotcha word → MIRROR MOVE  \n- If hater attacked the AI use directly → POST-HYPED (this is your strongest move)\n- If hater made a factual claim that can be absurdly mock-agreed-with → PLAY DUMB\n\nMANDATORY RULES:\n- Maximum 280 characters total\n- NO #ChromeCheck #PHR hashtags (this is a reply, not a main post)\n- NO "structural integrity" / "shallow mind" / "depth" / "architecture" — these are AI-slop screenshot bait\n- NO long defensive paragraphs\n- The strategy you chose should be visible in the WHY-line below\n\nFORMAT (follow EXACTLY):\nSTRATEGY: [Cold / Mirror / Post-Hyped / Play Dumb]\nWHY: [one short sentence explaining why this strategy fits this hater]\n\nEN:\n[your reply]\n\nDE:\n[German translation, private]\n\nNothing else.`, 1500);
     
-    // Parse 4 strategies
-    const strategies = [];
-    const matches = raw.split(/STRATEGY \d+:/i).slice(1);
-    for(const m of matches){
-      const enMatch = m.match(/EN:\s*([\s\S]*?)(?=DE:|$)/i);
-      const deMatch = m.match(/DE:\s*([\s\S]*?)(?=STRATEGY|$)/i);
-      strategies.push({
-        en: enMatch ? enMatch[1].trim() : '',
-        de: deMatch ? deMatch[1].trim() : ''
-      });
-    }
+    // Parse strategy + why + reply
+    const stratMatch = raw.match(/STRATEGY:\s*([^\n]+)/i);
+    const whyMatch = raw.match(/WHY:\s*([^\n]+)/i);
+    const enMatch = raw.match(/EN:\s*([\s\S]*?)(?=DE:|$)/i);
+    const deMatch = raw.match(/DE:\s*([\s\S]*?)$/i);
     
-    // Pad to 4 if parsing failed
-    while(strategies.length < 4) strategies.push({en:'⚠ parse error',de:''});
+    const strategy = stratMatch ? stratMatch[1].trim() : 'Auto';
+    const why = whyMatch ? whyMatch[1].trim() : '';
+    const en = enMatch ? enMatch[1].trim() : raw;
+    const de = deMatch ? deMatch[1].trim() : '';
     
-    replyRes = strategies.slice(0, 4);
+    replyRes = [{en, de, strategy, why}];
+    saveToArchive(en, 'HATER_REPLY');
   }catch(e){replyRes=[{en:'⚠ '+e.message,de:''}]}
   replyBusy=false;R();
 }
