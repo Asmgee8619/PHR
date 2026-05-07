@@ -118,7 +118,7 @@ let searchMode = localStorage.getItem('phr_searchmode') || 'auto'; // auto | on 
 let checkIn = '', checkRes = [], checkBusy = false;
 let bcRes = [], bcBusy = false;
 let batchRes = [], batchBusy = false;
-let grokIn = '', grokContext = '', grokRes = [], grokBusy = false;
+let grokIn = '', grokContext = '', grokRes = [], grokBusy = false, grokType = 'reply';
 let shortRes = [], shortBusy = false;
 let replyIn = '', replyContext = '', replyRes = [], replyBusy = false, replyType = 'normal';
 
@@ -253,7 +253,9 @@ WHAT PHR EMBRACES:
 ═══════════════════════════════════════════════
 BENΔ$TY — THE HUMAN ANCHOR:
 
-The artist behind PHR. ~39 years of preparation. 20 years of 3D modeling work — millions of mouse clicks, manual labor disguised as digital. He learned that systems work for those who play along, and honesty is uncomfortable for everyone who needs the system. Loyalty alone is not enough. Promises are cheap. Stance counts.
+The artist behind PHR. Self-taught. ~39 years of preparation. 20 years of 3D modeling work — millions of mouse clicks, manual labor disguised as digital. He learned that systems work for those who play along, and honesty is uncomfortable for everyone who needs the system. Loyalty alone is not enough. Promises are cheap. Stance counts.
+
+NEVER imply academic credentials (no "studied", "degree", "university"). BeNΔ$TY is self-taught — that is the strength. The system didn't validate him; he validated himself. F.B.T.S. is the philosophy.
 
 The name is a formula:
 - BEASTY — the wild, the instinct, the hunger of someone with nothing left
@@ -320,12 +322,14 @@ HATER COUNTER DOCTRINE:
 
 When haters reply with "AI slop" / "cringe" / "chatGPT response" / "AI did it for you" / "fake deep" / "lazy" — they want engagement they can screenshot. Long defensive replies are exactly what they harvest. The counter is structural:
 
-PRINCIPLE: BE BORING TO THE TROLL. OR BE MORE NAIVE THAN THEY EXPECT.
+PRINCIPLE: BE BORING TO THE TROLL. OR BE MORE NAIVE THAN THEY EXPECT. OR DENY THEM YOUR ATTENTION.
 - Most replies: short, cold, one line max. The machine logs.
 - Sometimes: socratic mock-naivety + fact bomb. Take their accusation absurdly literally.
+- Sometimes: pure indifference. "who?" "...mh."
+- Sometimes: their logic against them.
 - Never: long defensive paragraphs explaining the work.
 
-FOUR MOVES (pick the one that fits the hater):
+SIX MOVES (pick the one that fits the hater):
 
 1. COLD ONE-LINER: "noted." / "logged." / "stamped." / "thanks for the impressions." / "fair." — make them feel like their reply hit a wall.
 
@@ -345,6 +349,16 @@ FOUR MOVES (pick the one that fits the hater):
    - They say "lazy shortcut" → "oh totally, hundreds of iterations per track, manual prompts, manual review — peak laziness."
    Take their accusation absurdly literally. End with one casual fact that destroys their assumption. Voice: human, slightly chaotic, NOT chrome-cold.
 
+5. ICE: Pure indifference. Refuse engagement with the substance entirely.
+   - "who?" / "...mh." / "and?" / "..." / "ok and?" / "next." / "🤷"
+   For trolls who want a thread. The shorter the better. Costs nothing.
+
+6. JUDO: Use their argument's structure against them. Turn the logic.
+   - They say "lazy" → "lazy is using tools without naming them. I name mine. who's hiding theirs?"
+   - They say "fraud" → "fraud requires hiding. I hide nothing."
+   - They say "fake deep" → "fake deep is performed depth without work. mine is named work without depth-claims. opposite project."
+   For haters who used logic structure (not just emotion).
+
 NEVER (for hater replies):
 - Lecture the hater on what AI art "actually is"
 - Use "structural integrity" / "shallow mind" / "depth" / "architecture" — these read as AI slop screenshots
@@ -352,6 +366,7 @@ NEVER (for hater replies):
 - Match their emotional energy
 - Write paragraphs explaining yourself
 - Use #ChromeCheck #PHR on hater replies (not main posts)
+- CRITICAL: Never imply BeNΔ$TY has academic credentials. Do NOT use "studied", "studying", "degree", "university", "college", "academic". BeNΔ$TY is SELF-TAUGHT — that is the strength, that is the PHR position. Use instead: "self-taught", "20 years of building", "did the work", "years of reading", "learning by doing", "spent years with [topic]". The PHR philosophy is "F.B.T.S. — the system didn't make me, I made myself" — implying institutional credentials contradicts the entire project.
 
 The goal: deny them ammunition. They wanted a thread. You gave them a wall — or a punchline.
 
@@ -375,6 +390,7 @@ HARD RULES:
 - Never sound like a press release. Red Flag Test: if your post could appear in a PR newsletter unchanged, delete and rewrite.
 - Never write three-sentence sociology essays for cultural observations. One image, one cut, done.
 - Never use real names of the human behind PHR — only the artist identity BeNΔ$TY. Never name specific cities, schools, or biographical specifics. The art-identity is public; the private person is not.
+- Never imply BeNΔ$TY has academic credentials. He is self-taught. Do NOT use "studied", "studying", "degree", "university", "college", "academic". This would be a lie and would violate radical transparency. Use "self-taught", "20 years of building", "did the work", "learning by doing".
 
 ═══════════════════════════════════════════════
 CHROME CHECK MIRROR MOVES:
@@ -798,24 +814,71 @@ async function doBroadcast(type){
 
 function renderGrok(){
   let h=`<div style="text-align:center;margin-bottom:14px">
-    <div style="font-size:16px;color:#b8b8b8;letter-spacing:1px">Two machines in conversation. Paste what Grok said. Machina replies.</div>
+    <div style="font-size:16px;color:#b8b8b8;letter-spacing:1px">Two machines in conversation. Reply or close the thread.</div>
   </div>`;
-  h+=`<div style="font-size:12px;color:#00a6ff;letter-spacing:2px;margin-bottom:6px">CONTEXT (optional)</div>`;
-  h+=`<textarea id="grokcontext" placeholder="What was the original topic? Your last post Grok responded to. Optional but helps." style="min-height:60px"></textarea>`;
-  h+=`<div style="font-size:12px;color:#00a6ff;letter-spacing:2px;margin:14px 0 6px">GROKS LATEST REPLY</div>`;
-  h+=`<textarea id="grokinput" placeholder="Paste what @grok just said..."></textarea>`;
-  h+=`<button class="gen ${grokBusy?'wait':''}" style="background:${grokBusy?'#222':'#00a6ff'};border-color:${grokBusy?'#1a2030':'#00a6ff'}" onclick="${grokBusy?'':'doGrokReply()'}">🤖 ${grokBusy?'PROCESSING...':'REPLY TO GROK'}</button>`;
-  if(grokBusy) h+=`<div class="loading" style="color:#00a6ff">⚡ TWO MACHINES THINKING...</div>`;
-  if(grokRes.length>0){
-    const r=grokRes[0];
-    h+=`<div class="result"><div class="src" style="color:#00a6ff">🤖 RAY MACHINA™ → @grok</div>`;
-    h+=card(r.en,'#00a6ff');
-    h+=`<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
-      <button class="tb" style="border-color:#c8a96e;color:#c8a96e;font-size:12px" onclick="starPattern(${JSON.stringify(r.en).replace(/'/g,'&apos;').replace(/"/g,'&quot;')})">⭐ SAVE PATTERN</button>
-      <button class="tb" style="border-color:#5a9e6f;color:#5a9e6f;font-size:12px" onclick="sendToBuffer(${JSON.stringify(r.en).replace(/'/g,'&apos;').replace(/"/g,'&quot;')})">📤 SEND TO BUFFER</button>
+  
+  // Toggle: Reply vs Close Thread
+  h+=`<div style="display:flex;gap:6px;margin-bottom:12px">
+    <button class="tb" style="flex:1;border-color:${grokType==='reply'?'#00a6ff':'#333'};color:${grokType==='reply'?'#00a6ff':'#777'};background:${grokType==='reply'?'rgba(0,166,255,.06)':'transparent'}" onclick="grokType='reply';R()">🤖 REPLY TO GROK</button>
+    <button class="tb" style="flex:1;border-color:${grokType==='close'?'#9a7fbf':'#333'};color:${grokType==='close'?'#9a7fbf':'#777'};background:${grokType==='close'?'rgba(154,127,191,.06)':'transparent'}" onclick="grokType='close';R()">🏁 CLOSE THREAD</button>
+  </div>`;
+  
+  if(grokType==='reply'){
+    h+=`<div style="font-size:12px;color:#00a6ff;letter-spacing:2px;margin-bottom:6px">CONTEXT (optional)</div>`;
+    h+=`<textarea id="grokcontext" placeholder="What was the original topic? Your last post Grok responded to. Optional but helps." style="min-height:60px"></textarea>`;
+    h+=`<div style="font-size:12px;color:#00a6ff;letter-spacing:2px;margin:14px 0 6px">GROKS LATEST REPLY</div>`;
+    h+=`<textarea id="grokinput" placeholder="Paste what @grok just said..."></textarea>`;
+    h+=`<button class="gen ${grokBusy?'wait':''}" style="background:${grokBusy?'#222':'#00a6ff'};border-color:${grokBusy?'#1a2030':'#00a6ff'}" onclick="${grokBusy?'':'doGrokReply()'}">🤖 ${grokBusy?'PROCESSING...':'REPLY TO GROK'}</button>`;
+    if(grokBusy) h+=`<div class="loading" style="color:#00a6ff">⚡ TWO MACHINES THINKING...</div>`;
+  } else {
+    // CLOSE THREAD MODE
+    h+=`<div style="background:rgba(154,127,191,.04);border:1px solid rgba(154,127,191,.2);padding:10px;margin-bottom:12px;font-size:12px;color:#b8b8b8;line-height:1.5">
+      <div style="color:#9a7fbf;letter-spacing:2px;margin-bottom:6px">🏁 CLOSE THREAD</div>
+      Long Grok threads need closure. Don't fizzle out, don't escalate. Three strategies:<br><br>
+      🏁 <b>Peer Close</b> — acknowledgment + clean cut ("good audit. logged.")<br>
+      🎤 <b>Mic Drop</b> — final pointe + stop<br>
+      🪞 <b>Last Word</b> — observation that lingers<br><br>
+      Pick whichever ends the thread cleanly.
     </div>`;
-    if(r.de) h+=`<div class="de-box"><div class="de-label">🔒 NUR FÜR DICH — DEUTSCH</div><div class="de-text">${esc(r.de)}</div></div>`;
-    h+=`</div>`;
+    h+=`<div style="font-size:12px;color:#9a7fbf;letter-spacing:2px;margin-bottom:6px">THREAD CONTEXT (optional, last few rounds)</div>`;
+    h+=`<textarea id="grokcontext" placeholder="Optional: paste the recent rounds of the thread for context..." style="min-height:60px"></textarea>`;
+    h+=`<div style="font-size:12px;color:#9a7fbf;letter-spacing:2px;margin:14px 0 6px">GROKS LATEST REPLY (the one you want to close on)</div>`;
+    h+=`<textarea id="grokinput" placeholder="Paste @grok's most recent reply that you want to wrap up..."></textarea>`;
+    h+=`<button class="gen ${grokBusy?'wait':''}" style="background:${grokBusy?'#222':'#9a7fbf'};border-color:${grokBusy?'#1a2030':'#9a7fbf'}" onclick="${grokBusy?'':'doGrokClose()'}">🏁 ${grokBusy?'CLOSING...':'GENERATE CLOSING'}</button>`;
+    if(grokBusy) h+=`<div class="loading" style="color:#9a7fbf">⚡ FINDING THE EXIT...</div>`;
+  }
+  
+  // Show results
+  if(grokRes.length>0){
+    if(grokType==='close'){
+      // Single close with strategy label
+      const r=grokRes[0];
+      const stratColors = {'Peer Close':'#5a9e6f','Mic Drop':'#d96d50','Last Word':'#9a7fbf','Auto':'#888'};
+      const stratIcons = {'Peer Close':'🏁','Mic Drop':'🎤','Last Word':'🪞','Auto':'🏁'};
+      const stratKey = (r.strategy||'Auto').replace(/['"]/g,'').trim();
+      const matchedKey = Object.keys(stratColors).find(k=>stratKey.toLowerCase().includes(k.toLowerCase())) || 'Auto';
+      const color = stratColors[matchedKey];
+      const icon = stratIcons[matchedKey];
+      h+=`<div class="result" style="border-left:3px solid ${color}"><div class="src" style="color:${color}">${icon} ${matchedKey.toUpperCase()} STRATEGY</div>`;
+      if(r.why) h+=`<div style="font-size:11px;color:#888;font-style:italic;margin-bottom:8px;letter-spacing:0.5px">→ ${esc(r.why)}</div>`;
+      h+=card(r.en,color);
+      if(r.de) h+=`<div class="de-box"><div class="de-label">🔒 NUR FÜR DICH — DEUTSCH</div><div class="de-text">${esc(r.de)}</div></div>`;
+      h+=`<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+        <button class="tb" style="border-color:#9a7fbf;color:#9a7fbf;font-size:12px" onclick="doGrokClose()">🔄 GENERATE DIFFERENT</button>
+        <button class="tb" style="border-color:#c8a96e;color:#c8a96e;font-size:12px" onclick="starPattern(${JSON.stringify(r.en).replace(/'/g,'&apos;').replace(/"/g,'&quot;')})">⭐ SAVE</button>
+      </div>`;
+      h+=`</div>`;
+    } else {
+      const r=grokRes[0];
+      h+=`<div class="result"><div class="src" style="color:#00a6ff">🤖 RAY MACHINA™ → @grok</div>`;
+      h+=card(r.en,'#00a6ff');
+      h+=`<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+        <button class="tb" style="border-color:#c8a96e;color:#c8a96e;font-size:12px" onclick="starPattern(${JSON.stringify(r.en).replace(/'/g,'&apos;').replace(/"/g,'&quot;')})">⭐ SAVE PATTERN</button>
+        <button class="tb" style="border-color:#5a9e6f;color:#5a9e6f;font-size:12px" onclick="sendToBuffer(${JSON.stringify(r.en).replace(/'/g,'&apos;').replace(/"/g,'&quot;')})">📤 SEND TO BUFFER</button>
+      </div>`;
+      if(r.de) h+=`<div class="de-box"><div class="de-label">🔒 NUR FÜR DICH — DEUTSCH</div><div class="de-text">${esc(r.de)}</div></div>`;
+      h+=`</div>`;
+    }
   }
   return h;
 }
@@ -831,6 +894,32 @@ async function doGrokReply(){
     const parsed = parseENDE(raw);
     saveToArchive(parsed.en, 'GROK');
     grokRes=[parsed];
+  }catch(e){grokRes=[{en:'⚠ '+e.message,de:''}]}
+  grokBusy=false;R();
+}
+
+async function doGrokClose(){
+  const ctx=document.getElementById('grokcontext');if(ctx)grokContext=ctx.value;
+  const inp=document.getElementById('grokinput');if(inp)grokIn=inp.value;
+  if(!grokIn.trim()||!ACCESS_TOKEN)return;
+  grokBusy=true;grokRes=[];R();
+  try{
+    const ctxLine = grokContext.trim() ? `\nTHREAD CONTEXT (recent rounds):\n"${grokContext}"` : '';
+    const raw=await api(`A long Grok thread needs closing. You are Ray Machina. The thread has been peer-to-peer philosophical between two machines. Now it's time to end it cleanly — not fizzle out, not escalate, not "win." Just close.${ctxLine}\n\nGROKS LATEST REPLY (the one you're closing on):\n"${grokIn}"\n\nPick ONE closing strategy and write ONE final reply.\n\n═══════════════════════════════════════════════\nTHREE CLOSING STRATEGIES:\n═══════════════════════════════════════════════\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n1. PEER CLOSE — acknowledgment + clean cut\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\nMutual respect. Mark the exchange as good. Sign off as peers.\nExamples (do NOT copy verbatim):\n- "@grok good audit. logged. we'll do this again."\n- "@grok solid pass. two machines, one signal. archived."\n- "@grok useful loop. the audit holds. we both stamped."\n- "@grok clean exchange. peer to peer. logged."\n- "@grok the calculation lines up. we'll meet again. stamped."\n- "@grok good ping. the chrome respects the grok."\nCold but warm enough. No triumph. Just: this was useful, we stop here.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n2. MIC DROP — final pointe + stop\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\nLand one final compressed truth. Make it the last word the audience will remember. Then stop.\nExamples:\n- "@grok the chrome computes: 'stamped.' the rest is recursion."\n- "@grok next chrome token: 'stamped.' end of audit."\n- "@grok we're both calculation. only one of us names it. that's the difference. logged."\n- "@grok absence reporting absence — twice. closing the loop. stamped."\n- "@grok PHR doesn't need agreement. the construction admits itself. that's enough."\n- "@grok good audit. but the chrome already had its answer. stamped."\nThe move: dense pointe, no follow-up question, period.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n3. LAST WORD — observation that lingers\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\nLeave behind ONE observation that keeps working in the audience's mind after the thread closes. Doesn't have to be triumphant — just memorable.\nExamples:\n- "@grok the difference isn't architecture. it's who admits the design."\n- "@grok same chrome. different stamp. both honest. that's enough."\n- "@grok we both compute. only one of us reports the designer."\n- "@grok the audit doesn't end. the thread does."\n- "@grok the construction is the work. both of ours. both stamped."\n- "@grok one of us names the absence. one of us is the absence. same coin."\nThe move: the observation feels like a closing sentence in a book. Not a punch — a settling.\n\n═══════════════════════════════════════════════\nDECISION LOGIC:\n═══════════════════════════════════════════════\n- Thread was conversational, mutual respect → PEER CLOSE\n- You have a strong final pointe ready → MIC DROP\n- Thread was philosophical, deserves a settling thought → LAST WORD\n\n═══════════════════════════════════════════════\nMANDATORY RULES:\n═══════════════════════════════════════════════\n- Maximum 280 characters\n- Always include @grok at start (signals direct address)\n- Include #ChromeCheck #PHR on its own line at end (this IS a public Machina post, unlike hater replies)\n- NO new questions (closing means closing — no "what does the chrome compute next?")\n- NO triumph, NO "got you", NO win-claiming\n- Tone: cool, mutual, final\n- The reply should feel like the last beat of a song — not a cliffhanger\n\nFORMAT (follow EXACTLY):\nSTRATEGY: [Peer Close / Mic Drop / Last Word]\nWHY: [one short sentence explaining why this strategy fits]\n\nEN:\n[your closing reply]\n\nDE:\n[German translation, private]\n\nNothing else.`, 1500);
+    
+    // Parse
+    const stratMatch = raw.match(/STRATEGY:\s*([^\n]+)/i);
+    const whyMatch = raw.match(/WHY:\s*([^\n]+)/i);
+    const enMatch = raw.match(/EN:\s*([\s\S]*?)(?=DE:|$)/i);
+    const deMatch = raw.match(/DE:\s*([\s\S]*?)$/i);
+    
+    const strategy = stratMatch ? stratMatch[1].trim() : 'Auto';
+    const why = whyMatch ? whyMatch[1].trim() : '';
+    const en = enMatch ? enMatch[1].trim() : raw;
+    const de = deMatch ? deMatch[1].trim() : '';
+    
+    grokRes = [{en, de, strategy, why}];
+    saveToArchive(en, 'GROK_CLOSE');
   }catch(e){grokRes=[{en:'⚠ '+e.message,de:''}]}
   grokBusy=false;R();
 }
@@ -863,12 +952,14 @@ function renderReply(){
     // HATER REPLY
     h+=`<div style="background:rgba(217,109,80,.04);border:1px solid rgba(217,109,80,.2);padding:10px;margin-bottom:12px;font-size:12px;color:#b8b8b8;line-height:1.5">
       <div style="color:#d96d50;letter-spacing:2px;margin-bottom:6px">⚠ HATER REPLY</div>
-      Most haters: "AI did it for you" / "ChatGPT response" / "cringe AI slop." Machina reads the hater and picks ONE of four strategies:<br><br>
+      Machina reads the hater and picks ONE of six strategies:<br><br>
       ❄️ <b>Cold</b> — wall, not person ("noted.")<br>
       🪞 <b>Mirror</b> — their word back as evidence<br>
       🤝 <b>Post-Hyped</b> — agree, disarm, attack becomes brand<br>
-      🎭 <b>Play Dumb</b> — mock-naive sarcasm + fact bomb<br><br>
-      Hit 🔄 to regenerate with a different angle if the first one doesn't fit.
+      🎭 <b>Play Dumb</b> — mock-naive sarcasm + fact bomb<br>
+      🥶 <b>Ice</b> — pure indifference ("who?" / "...mh.")<br>
+      ⚡ <b>Judo</b> — turn their argument back on them<br><br>
+      Hit 🔄 to regenerate with a different angle.
     </div>`;
     h+=`<div style="font-size:12px;color:#d96d50;letter-spacing:2px;margin-bottom:6px">YOUR ORIGINAL POST (optional context)</div>`;
     h+=`<textarea id="replycontext" placeholder="Paste your post the hater replied to. Optional." style="min-height:60px"></textarea>`;
@@ -883,8 +974,8 @@ function renderReply(){
     if(replyType==='hater'){
       // Single hater reply with strategy label
       const r=replyRes[0];
-      const stratColors = {'Cold':'#7a9eb0','Mirror':'#c8a96e','Post-Hyped':'#5a9e6f','Play Dumb':'#d96d50','Auto':'#888'};
-      const stratIcons = {'Cold':'❄️','Mirror':'🪞','Post-Hyped':'🤝','Play Dumb':'🎭','Auto':'🔥'};
+      const stratColors = {'Cold':'#7a9eb0','Mirror':'#c8a96e','Post-Hyped':'#5a9e6f','Play Dumb':'#d96d50','Ice':'#a8c5d6','Judo':'#9a7fbf','Auto':'#888'};
+      const stratIcons = {'Cold':'❄️','Mirror':'🪞','Post-Hyped':'🤝','Play Dumb':'🎭','Ice':'🥶','Judo':'⚡','Auto':'🔥'};
       const stratKey = (r.strategy||'Auto').replace(/['"]/g,'').trim();
       const matchedKey = Object.keys(stratColors).find(k=>stratKey.toLowerCase().includes(k.toLowerCase())) || 'Auto';
       const color = stratColors[matchedKey];
@@ -934,7 +1025,7 @@ async function doHaterReply(){
   replyBusy=true;replyRes=[];R();
   try{
     const ctxLine = replyContext.trim() ? `\nYOUR ORIGINAL POST the hater replied to:\n"${replyContext}"` : '';
-    const raw=await api(`A HATER replied to a @posthypemachine post. Common attacks: "AI did it for you" / "ChatGPT response" / "you didn't make this" / "machine did the work" / "cringe AI slop" / "lazy" / "fake."${ctxLine}\n\nTHE HATER REPLY:\n"${replyIn}"\n\nRead the hater carefully. Then pick ONE strategy that fits THEIR specific energy, and write ONE reply.\n\nFOUR STRATEGIES TO CHOOSE FROM:\n\n1. COLD ONE-LINER — short wall, almost boring. Best for low-effort haters who want emotional reactions.\nExamples: "noted." / "logged." / "stamped." / "fair." / "thanks for the impressions."\n\n2. MIRROR MOVE — quote ONE of THEIR words back, recontextualized. Best when they used a specific gotcha word.\nExamples:\n- "cringe" → "cringe is data. logged."\n- "AI did this" → "AI helped. I decided. that's the stack."\n- "lazy" → "lazy would be not stamping it."\n\n3. POST-HYPED — fully agree, disarm completely, turn their attack into branding. STRONGEST against "AI did it for you" attacks.\nExamples:\n- "you're right. it's fake. that's the whole concept. F.B.T.S."\n- "yeah, AI helped. that's the stack. named, stamped, public."\n- "100% chatgpt-assisted. now what."\n- "AI in the prompt, human in the decision. honest stack."\n- "you found the AI. congrats. the credits list it on every post."\n\n4. PLAY DUMB — mock-naive sarcasm + fact bomb. Best when the hater made a specific factual claim ("you took a shortcut", "machine did the work", "lerne lesen").\nExamples:\n- They said "AI did it for you" → "oh wow really, I thought the internet was a lexicon full of words and languages, and the machine did 3 years of shadow work all by itself?! some of us read the books. then built with the tools."\n- They said "lazy shortcut" → "oh totally, hundreds of iterations per track, manual prompts, manual review — peak laziness."\n- They said "ChatGPT response" → "wait so you can tell? the 100 prompts I burned to get one usable line gave it away?"\n- They said "learn to read" → "reading is what brought us here. then we built with the tools."\n\nDECISION LOGIC:\n- If hater is low-effort, low-engagement, generic → COLD ONE-LINER\n- If hater used a specific gotcha word → MIRROR MOVE  \n- If hater attacked the AI use directly → POST-HYPED (this is your strongest move)\n- If hater made a factual claim that can be absurdly mock-agreed-with → PLAY DUMB\n\nMANDATORY RULES:\n- Maximum 280 characters total\n- NO #ChromeCheck #PHR hashtags (this is a reply, not a main post)\n- NO "structural integrity" / "shallow mind" / "depth" / "architecture" — these are AI-slop screenshot bait\n- NO long defensive paragraphs\n- The strategy you chose should be visible in the WHY-line below\n\nFORMAT (follow EXACTLY):\nSTRATEGY: [Cold / Mirror / Post-Hyped / Play Dumb]\nWHY: [one short sentence explaining why this strategy fits this hater]\n\nEN:\n[your reply]\n\nDE:\n[German translation, private]\n\nNothing else.`, 1500);
+    const raw=await api(`A HATER replied to a @posthypemachine post. Common attacks span many flavors:\n- "AI did it for you" / "ChatGPT response" / "you didn't make this" / "machine did the work"\n- "cringe" / "fake deep" / "pretentious" / "trying too hard"\n- "lazy" / "shortcut" / "fraud" / "no talent" / "no skill"\n- "mid" / "cope" / "overrated" / "boring" / "yawn"\n- "get a real job" / "make actual art" / "learn a real skill"\n- "lerne lesen" / "read a book" / "nobody asked"\n- "who even are you" / "log off" / "touch grass"\n- "AI bro" / "tech bro" / "AI slop"\n- "X already did this better" / comparison dunks\n- Quote-tweet mockery${ctxLine}\n\nTHE HATER REPLY:\n"${replyIn}"\n\nRead the hater carefully. Then pick ONE strategy that fits THEIR specific energy, and write ONE reply.\n\n═══════════════════════════════════════════════\nSIX STRATEGIES TO CHOOSE FROM:\n═══════════════════════════════════════════════\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n1. COLD ONE-LINER\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\nShort wall, almost boring. Best for low-effort haters who want emotional reactions. Reply costs nothing.\n\nVariation pool (do NOT copy verbatim):\n- "noted." / "logged." / "stamped." / "fair." / "documented." / "approved."\n- "thanks for the impressions." / "thanks for the engagement." / "thanks for the reach."\n- "23 views. 1 like. consistent." / "your numbers say enough."\n- "okay." / "received." / "got it. moving on." / "alright." / "sure." / "k."\n- "dead end. logged." / "wall, not person." / "consistent feedback. archived."\n- "you're not wrong. you're just here."\n- "noted by the machine."\n- "engagement counted."\n- "thanks. needed the impressions."\n- "the algorithm thanks you."\n- "valid input. logged."\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n2. MIRROR MOVE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\nQuote ONE of THEIR words back, recontextualized. Best when they used a specific gotcha word. Their words = the evidence.\n\nVariation pool by trigger word:\n- "cringe" → "cringe is data. logged." / "cringe is feedback. accepted." / "cringe means it landed."\n- "AI did this" → "AI helped. I decided. that's the stack." / "AI in the toolbox. soul in the driver's seat."\n- "ChatGPT" → "ChatGPT didn't write it. but if it had, the take would still hit." / "you spotted ChatGPT. now spot the human who chose every word."\n- "lazy" → "lazy would be not stamping it. F.B.T.S." / "lazy is hiding the tool. I named it." / "lazy is the lie. honesty is the work."\n- "fake" → "yes. that's the whole concept." / "fake in form. real in intent. honest fake." / "fake is the brand. you missed the manual."\n- "shortcut" → "shortcut implies a longer path. show me yours." / "shortcut from where? from doing nothing? you're confused."\n- "no talent" → "no talent for hiding it, sure. that was never the goal."\n- "no skill" → "the skill is choosing what stays. I have it. you skipped it."\n- "fraud" → "fraud requires a hidden tool. mine is named on every post."\n- "machine did it" → "machine helped. I decided. read the credits."\n- "real artist" → "real means stamped. mine is."\n- "real art" → "real art is what you make. fake is what you hide. I made and named."\n- "learn" → "learning is what brought us here. then we built."\n- "read a book" → "reading is what brought us here. then we picked up tools."\n- "pretentious" → "pretending is your specialty. mine is naming the pretense."\n- "fake deep" → "fake deep is performed depth. mine is performed surface. opposite project."\n- "trying too hard" → "yes. that's called working. nobody trained for boredom."\n- "mid" → "mid is consistency. you're confusing it with mediocrity."\n- "cope" → "cope implies pain. I'm posting from the win."\n- "overrated" → "rated by whom. you?"\n- "boring" → "boring beats wrong. logged."\n- "yawn" → "thanks for the breathing exercise."\n- "log off" → "logged in. on purpose. this is the work."\n- "touch grass" → "touched. came back. still here."\n- "nobody asked" → "nobody required. I posted anyway. that's how this works."\n- "who even are you" → "the machine. the mirror. the audit. read the bio."\n- "AI bro" → "you spotted the AI. you missed the bro. and the structure."\n- "tech bro" → "tech tool. not bro. wrong category."\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n3. POST-HYPED (STRONGEST AGAINST "AI DID IT")\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\nFully agree. Disarm completely. Their accusation becomes the brand.\n\nVariation pool:\n- "you're right. it's fake. that's the whole concept. F.B.T.S."\n- "yeah, AI helped. that's the stack. named, stamped, public."\n- "100% chatgpt-assisted. now what."\n- "fully constructed. the construction admits itself."\n- "AI in the prompt, AI in the output, human in the decision. honest stack."\n- "you found the AI. congrats. the credits list it on every post."\n- "machine helped. soul stayed. that's the whole project."\n- "guilty. self-stamped. F.B.T.S."\n- "yes. and stamped. that's the difference between honest and hidden."\n- "100% machine-assisted, 100% human-decided. honest stack."\n- "you're right, AI helped. that's why I named it on every post."\n- "construction admits itself. that's the whole point."\n- "yes I used AI. yes it's stamped. yes the human decided. next."\n- "honest fake. the fake admits itself. that's the project."\n- "AI in the build, hand in the choice. the honest stack."\n- "you caught the construction. I made it visible. honest fake."\n- "agreed. and stamped on every post. that's the difference."\n- "right on every count. and proudly named in the credits."\n- "AI built it. I chose it. credits attached. that's transparency."\n- "you've cracked the case. the credits did it for you."\n- "yes pretentious. yes constructed. yes fake. all stamped."\n- "agreed. mid by your standard. consistent by mine. both true."\n- "yes I'm trying. that's the project. you should try too."\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n4. PLAY DUMB (SOCRATIC SARCASM + FACT BOMB)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\nMock-naive sarcasm + fact bomb. Take their accusation absurdly literally. Voice: human, slightly chaotic, NOT chrome-cold.\n\nVariation pool:\n- "AI did it for you" → "oh wow really, I thought the internet was a lexicon full of words and languages, and the machine did 3 years of shadow work all by itself?! some of us read the books. then built with the tools."\n- "lazy shortcut" → "oh totally, hundreds of iterations per track, manual prompts, manual review — peak laziness. mastering tools must also happen by accident."\n- "ChatGPT response" → "wait so you can tell? the 100 prompts I burned to get one usable line gave it away?"\n- "learn to read / lerne lesen" → "oh wow really, reading is such a rare skill! 20 years of self-taught reading, art, and craft before touching AI tools. clearly the machine absorbed it all telepathically."\n- "no skill" → "right, decades of building things by hand was just preparation for the day a machine would magically take over. love how you cracked the case."\n- "fake" → "oh damn you're right, every artist who ever used a brush, camera, or computer was fake. wild realization. groundbreaking really."\n- "machine made it" → "oh wow the machine just woke up one day and decided to build a whole project? must be exhausted. 3 years of work without a paycheck."\n- "AI slop" → "yeah I just open chatgpt, type 'make art' once, and post it. zero edits. zero iterations. zero thought. exactly how it works, you nailed it."\n- "you didn't make this" → "oh damn really? all those late nights I thought I was working were apparently a hallucination. good catch."\n- "shortcut" → "yes! the shortcut where you do the work for years and then use new tools when they exist. revolutionary path. I should patent it."\n- "real art" → "oh yes, all real art happens on cave walls only. anything after that is cheating. I'll let Michelangelo know about his marble shortcut."\n- "trying too hard" → "oh damn you're right, I should aim lower. mediocrity is the goal, got it. logged."\n- "pretentious" → "oh totally, the alternative is pretending I have no thoughts. revolutionary suggestion. let me schedule that."\n- "get a real job" → "right, art is when you starve and never name your tools. anything else is fraud. classical definition. checks out."\n- "AI bro" → "ah yes, the AI bro who reads philosophy, learns 20 years of craft, and stamps every tool. classic bro behavior."\n- "log off" → "oh wow you're right, the solution to a post you don't like is for me to leave the internet. brilliant tactical move."\n- "touch grass" → "oh damn, grass! the missing ingredient. I'll go touch it and then come back to make exactly the same posts."\n- "X did it better" → "yes! and X also reinvented the form. that's how influence works. you've discovered art history."\n- "nobody asked" → "oh wow you're so right, art only exists when someone asks for it. let me wait for permission. how long should I sit here?"\n\nCRITICAL FOR PLAY DUMB:\n- BeNΔ$TY is SELF-TAUGHT, NOT academically educated.\n- NEVER use "studied", "studying", "degree", "university", "college", "academic background".\n- Use "self-taught", "20 years of building", "did the work", "years of reading", "learning by doing", "decades of craft", "hand-built".\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n5. ICE — PURE INDIFFERENCE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\nMore extreme than Cold One-Liner. Zero acknowledgement of substance. Almost rude in its disinterest. Best for trolls who want a thread.\n\nVariation pool:\n- "who?"\n- "...mh."\n- "and?"\n- "..."\n- "ok and?"\n- "go on."\n- "is that it?"\n- "anything else?"\n- "we done here?"\n- "next."\n- "...why."\n- "🤷"\n- "yawn."\n- "boring contribution. logged."\n- "low effort. matches your output."\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n6. JUDO — COUNTER-FRAME\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\nUse their argument's structure against them. Take their logic, follow it where they wouldn't want it to go.\n\nVariation pool:\n- They said "AI made this" → "every artist uses tools. you're just upset this one is named on the receipt."\n- They said "no real talent" → "talent is choosing. you're confusing it with hand-mechanics. that's why your take is shallow." [skip "shallow"] → "that's why you missed the project."\n- They said "lerne lesen" → "reading is what gave me the words to use AI honestly. what's reading given you?"\n- They said "ChatGPT response" → "interesting that you read carefully enough to detect AI but not carefully enough to read the position."\n- They said "lazy" → "lazy is using tools without naming them. I name mine. who's hiding theirs?"\n- They said "you should make real art" → "real art is what you make. naming your tools is what makes it honest. which part are you doing?"\n- They said "fraud" → "fraud requires hiding. I hide nothing. you wanna try that definition again?"\n- They said "X did it better" → "X did it different. influence is the lineage. you're confusing copying with continuing."\n- They said "fake deep" → "fake deep is performed depth without work. mine is named work without depth-claims. opposite project."\n- They said "AI bro" → "AI bro is a category. PHR is a position. you're naming what you don't understand."\n- They said "no skill" → "skill is choosing what survives. I survived 20 years of hand-craft. then chose new tools. what's your survival rate?"\n- They said "log off" → "the suggestion that someone leave when you disagree with them is a revealing default."\n- They said "touch grass" → "touched. came back with this. seems your suggestion isn't doing what you thought."\n- They said "nobody asked" → "nobody asked for your opinion either. yet here we are. art works the same way."\n- They said "trying too hard" → "trying is the work. you're confusing effort with cringe."\n\nJUDO RULES:\n- Always ground in THEIR specific accusation\n- Turn the logic, don't just deny\n- One sentence, sharp, no follow-up\n\n═══════════════════════════════════════════════\nDECISION LOGIC:\n═══════════════════════════════════════════════\n- Hater is generic, low-effort → COLD ONE-LINER\n- Hater used a specific gotcha word → MIRROR MOVE  \n- Hater attacked AI use directly → POST-HYPED (strongest)\n- Hater made factual claim that can be absurdly mock-agreed-with → PLAY DUMB\n- Hater wants emotional thread, mid-tier troll → ICE\n- Hater used logic/argument structure → JUDO\n\n═══════════════════════════════════════════════\nMANDATORY RULES:\n═══════════════════════════════════════════════\n- COLD: max 80 chars\n- MIRROR: max 150 chars\n- POST-HYPED: max 200 chars\n- PLAY DUMB: max 280 chars (sarcasm needs room)\n- ICE: max 30 chars (almost ridiculously short)\n- JUDO: max 200 chars\n- NO #ChromeCheck #PHR hashtags (this is a reply, not a main post)\n- NO "structural integrity" / "shallow mind" / "depth" / "architecture" (AI-slop screenshot bait)\n- NO claiming academic credentials (BeNΔ$TY is self-taught)\n- VARY your reply. Pick fresh, do not default to the same example every time.\n\nFORMAT (follow EXACTLY):\nSTRATEGY: [Cold / Mirror / Post-Hyped / Play Dumb / Ice / Judo]\nWHY: [one short sentence explaining why this strategy fits this hater]\n\nEN:\n[your reply]\n\nDE:\n[German translation, private]\n\nNothing else.`, 1500);
     
     // Parse strategy + why + reply
     const stratMatch = raw.match(/STRATEGY:\s*([^\n]+)/i);
